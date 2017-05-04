@@ -1,7 +1,10 @@
 package encryption;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -46,4 +49,73 @@ public class CommonFileManager {
 	    }
 	    return temp;
 	}
+	
+	public static byte[] getBytesFromFilepath(String filePath) {
+		byte[] buffer = null;
+		try {
+			File file = new File(filePath);
+			if (file.exists()) {
+				FileInputStream fis = new FileInputStream(file);
+				ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
+				byte[] b = new byte[1024];
+		        int n = fis.read(b);
+		        while (n != -1) {
+		        	bos.write(b, 0, n);
+		        	n = fis.read(b);
+		        }
+		        fis.close();
+		        bos.close();
+		        buffer = bos.toByteArray();
+		        System.out.println("从以下路径获取了文件：" + filePath);
+		    }
+		    else {
+		    	System.out.println(filePath + "该文件不存在");
+		   }
+		}
+		catch (FileNotFoundException e) {  
+			e.printStackTrace();  
+		}
+		catch (IOException e) {  
+			e.printStackTrace();  
+		}
+		return buffer;
+	}
+	
+	public static void saveBytesToFilepath(byte[] bfile, String filePath) {  
+        BufferedOutputStream bos = null;
+        FileOutputStream fos = null;  
+        File file = null;
+        try {
+            File dir = new File(filePath);  
+            if(!dir.exists() && dir.isDirectory()){//判断文件目录是否存在  
+                dir.mkdirs();  
+            }
+            file = new File(filePath);  
+            fos = new FileOutputStream(file);  
+            bos = new BufferedOutputStream(fos);  
+            bos.write(bfile); 
+            System.out.println("保存了文件到以下路径：" + filePath);
+        }
+        catch (Exception e) {  
+            e.printStackTrace();  
+        }
+        finally {  
+            if (bos != null) {  
+                try {  
+                    bos.close();  
+                }
+                catch (IOException e1) {  
+                    e1.printStackTrace();  
+                }  
+            }  
+            if (fos != null) {  
+                try {  
+                    fos.close();  
+                }
+                catch (IOException e1) {  
+                    e1.printStackTrace();  
+                }  
+            }  
+        }  
+    }
 }
