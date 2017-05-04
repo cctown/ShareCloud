@@ -5,19 +5,19 @@ import java.security.NoSuchAlgorithmException;
 
 public class SHA512 {
 	
-	public byte[] SHAByte(final byte[] b) {  
+	public static byte[] SHAByte(final byte[] b) {  
 		return SHAByte(b, "SHA-512");
 	}
 	
-	public byte[] SHAStringToString(final String strText) {  
+	public static byte[] SHAStringToString(final String strText) {  
 		return SHAToByte(strText, "SHA-512");
 	}
 	
-	public String SHAStringToByte(final String strText) {  
+	public static String SHAStringToByte(final String strText) {  
 		return SHAToString(strText, "SHA-512");
 	}
 	
-	private byte[] SHAByte(final byte[] b, final String strType) {
+	private static byte[] SHAByte(final byte[] b, final String strType) {
 		//返回值
 		byte byteBuffer[] = null;
 	    // 是否是有效字符串
@@ -38,7 +38,7 @@ public class SHA512 {
 	    return byteBuffer;
 	}
 	
-	private byte[] SHAToByte(final String strText, final String strType) {
+	private static byte[] SHAToByte(final String strText, final String strType) {
 		//返回值
 		byte byteBuffer[] = null;
 		// 是否是有效字符串
@@ -59,7 +59,7 @@ public class SHA512 {
 		return byteBuffer;
 	}
 	
-	private String SHAToString(final String strText, final String strType) {
+	private static String SHAToString(final String strText, final String strType) {
 		// 返回值
 		String strResult = null;
 		// 是否是有效字符串

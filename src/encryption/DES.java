@@ -8,23 +8,14 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
 public class DES {
-	private static final String PASSWORD_CRYPT_KEY = "kEHrDooxWHCWtfeSxvDvgqZq";
-	private static final String path = "/Users/chencaixia/SecretCloud/download/msg.txt";
+	private static final String path = "/Users/chencaixia/SecretCloud/download/原文.txt";
 	private static final String encryptPath = "/Users/chencaixia/SecretCloud/encrypt/加密结果.txt";
 	private static final String decryptPath = "/Users/chencaixia/SecretCloud/decrypt/解密结果.txt";
+	private static final String keyPath = "/Users/chencaixia/SecretCloud/key/密钥.txt";
 	
 	public static void main (String args[]) throws Exception {
-		//原始密钥串
-		byte[] key = PASSWORD_CRYPT_KEY.getBytes();
-		String msg = "测试数据";
-		System.out.println("原文为：" + msg);
-		byte[] a = DES.encrypt(msg.getBytes(), key);
-		String str = new String(a);
-		System.out.println("加密得到密文" + str);
-		a = DES.decrypt(a, PASSWORD_CRYPT_KEY.getBytes());
-		String re = new String(a);
-		System.out.println("解密得到" + re);
-		
+		//获取密钥串，并将其散列为512位，方便后面代理重加密分享，避免用户设置的密钥过长导致pbc不能处理
+		byte[] key = SHA512.SHAByte(CommonFileManager.getBytesFromFilepath(keyPath));
 		//获取指定路径的明文
 		byte[] file = CommonFileManager.getBytesFromFilepath(path);
 		//将明文加密得到密文比特
