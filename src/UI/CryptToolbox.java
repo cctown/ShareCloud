@@ -206,7 +206,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
-			t.setText(t.getText() + "\n\n" + "选中密钥有误，请检查路径并重新选择");
+			t.setText(t.getText() + "\n\n" + "选中密钥有误，选中密钥路径为：" + keyPath + "，请检查该路径并重新选择");
 			return;
 		}
 		//获取指定路径的明文
@@ -215,7 +215,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
-			t.setText(t.getText() + "\n\n" + "选中文件有误，请检查路径重新选择");
+			t.setText(t.getText() + "\n\n" + "选中文件有误，选中文件路径为：" + filePath + "请检查该路径并重新选择");
 			return;
 		}
 		File file = new File(filePath);

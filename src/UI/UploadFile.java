@@ -3,6 +3,7 @@ package UI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -56,6 +57,7 @@ public class UploadFile extends JPanel implements ActionListener {
 		JScrollPane sp = new JScrollPane();
 		t = new JTextArea("上传文件路径：\n/usr/k/vlnfbka/kdfbnvabjkak/vkcbakafsnvkabhd/fbkvl/nabs/fbvk/dnfbkak/dfbnvabjkakvk.doc\n上传结果：上传成功/失败", 10, 30);
 		t.setEditable(false);
+		t.setMargin(new Insets(5, 5, 100, 5));
 		t.setLineWrap(true);				  //自动换行
 		t.setWrapStyleWord(true);			  //断行不断字
 		sp.setViewportView(t);

@@ -53,23 +53,18 @@ public class CommonFileManager {
 	public static byte[] getBytesFromFilepath(String filePath) throws Exception {
 		byte[] buffer = null;
 		File file = new File(filePath);
-		if (file.exists()) {
-			FileInputStream fis = new FileInputStream(file);
-			ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
-			byte[] b = new byte[1024];
-	        int n = fis.read(b);
-	        while (n != -1) {
-	        	bos.write(b, 0, n);
-	        	n = fis.read(b);
-	        }
-	        fis.close();
-	        bos.close();
-	        buffer = bos.toByteArray();
-	        System.out.println("从以下路径获取了文件：" + filePath);
-	    }
-	    else {
-	    	System.out.println(filePath + "该文件不存在");
-	   }
+		FileInputStream fis = new FileInputStream(file);
+		ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
+		byte[] b = new byte[1024];
+        int n = fis.read(b);
+        while (n != -1) {
+        	bos.write(b, 0, n);
+        	n = fis.read(b);
+        }
+        fis.close();
+        bos.close();
+        buffer = bos.toByteArray();
+        System.out.println("从以下路径获取了文件：" + filePath);
 		return buffer;
 	}
 	

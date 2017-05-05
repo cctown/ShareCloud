@@ -2,6 +2,7 @@ package UI;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -64,21 +65,14 @@ public class ShareFile extends JPanel implements ActionListener {
 		inputP.add(comfirmB, BorderLayout.EAST);
 		choseP.add(inputP, BorderLayout.NORTH);
 		
-		JPanel nameP = new JPanel(new BorderLayout(10, 20));
-		JPanel nj = new JPanel(new BorderLayout());
-		JLabel namel = NomalLabel("接收者：");
-		nj.add(namel, BorderLayout.NORTH);
-		JPanel cj = new JPanel();
-		nj.add(cj);
-		nameP.add(nj, BorderLayout.WEST);
 		JScrollPane sp = new JScrollPane();
-		t = new JTextArea("小红；小明；小花；小修", 10, 30);
+		t = new JTextArea("已选择接收者：\n\n小红；小明；小花；小修", 10, 30);
 		t.setEditable(false);
+		t.setMargin(new Insets(5, 5, 100, 5));
 		t.setLineWrap(true);				  //自动换行
 		t.setWrapStyleWord(true);			  //断行不断字
 		sp.setViewportView(t);
-		nameP.add(sp);
-		choseP.add(nameP);
+		choseP.add(sp);
 		
 		detailP.add(choseP);
 		
