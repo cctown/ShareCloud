@@ -179,8 +179,20 @@ public class CryptToolbox extends JPanel implements ActionListener{
 	}
 	
 	private void generateNewKey() {
-		String inputS = JOptionPane.showInputDialog("请随机输入一串字符用于生成密钥");
-		String name = JOptionPane.showInputDialog("请为该密钥起个名字");
+		String inputS;
+		String name;
+		inputS = JOptionPane.showInputDialog("请随机输入一串字符用于生成密钥");
+		if(inputS == null) {
+			return;
+		}
+		name = JOptionPane.showInputDialog("请为该密钥起个名字");
+		if(name == null) {
+			return;
+		}
+		if(name.equals("")) {
+			t.setText(t.getText() + "\n\n名字不能为空，生成新密钥失败。");
+			return;
+		}
 		String finallyPath;
 		try {
 			finallyPath = checkSameFileName(UserInfo.DESkeyPath + name, ".dat");
