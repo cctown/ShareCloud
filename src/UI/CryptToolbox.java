@@ -16,6 +16,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -51,7 +52,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 		fileB.addActionListener(this);
 		startB.addActionListener(this);
 		genKeyB.addActionListener(this);
-		keyPath = UserInfo.DESkeyPath;
+		keyPath = UserInfo.DESkeyPath + UserInfo.DefaultDESkeyName;
 		File keyfile = new File(keyPath);
 		if (!keyfile.exists()) {
 			DES.generateDefaultKeyToPath(keyPath);
@@ -169,9 +170,28 @@ public class CryptToolbox extends JPanel implements ActionListener{
 				t.setText(t.getText() + "\n\n" + "选择的文件为" + filePath);
 			}
 		}
+		else if(o == genKeyB) {
+			generateNewKey();
+		}
 		else if (o == startB) {
 			startOperation();
 		}
+	}
+	
+	private void generateNewKey() {
+		String inputS = JOptionPane.showInputDialog("请随机输入一串字符用于生成密钥");
+		String name = JOptionPane.showInputDialog("请为该密钥起个名字");
+		String finallyPath;
+		try {
+			finallyPath = checkSameFileName(UserInfo.DESkeyPath + name, ".dat");
+			DES.generateKeyFromBytesToPath(inputS.getBytes(), finallyPath);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			t.setText(t.getText() + "\n\n" + "DES密钥生成失败，详细信息如下：\n\n" + e.getMessage());
+			return;
+		}
+		t.setText(t.getText() + "\n\n" + "成功生成新的DES密钥，结果保存在" + finallyPath + "请前去查看。\n您可以使用该密钥来对文件进行加解密。");
 	}
 	
 	private void startOperation() {
@@ -213,14 +233,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 				return;
 			}
 			try {
-				finallyPath = UserInfo.encryptPath + fileName + "_加密结果" + fileAffix;
-				File dir = new File(finallyPath);
-				int i = 0;
-				while(dir.exists() && !dir.isDirectory()){    //有同名文件存在
-					i++;
-					finallyPath = UserInfo.encryptPath  + fileName + "_加密结果(" + i + ")" + fileAffix;
-					dir = new File(finallyPath);
-	            }
+				finallyPath = checkSameFileName(UserInfo.encryptPath + fileName + "_加密结果", fileAffix);
 				CommonFileManager.saveBytesToFilepath(cipher, finallyPath);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -240,14 +253,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 				return;
 			}
 			try {
-				finallyPath = UserInfo.decryptPath + fileName + "_解密结果" + fileAffix;
-				File dir = new File(finallyPath);
-				int i = 0;
-				while(dir.exists() && !dir.isDirectory()){    //有同名文件存在
-					i++;
-					finallyPath = UserInfo.decryptPath  + fileName + "_解密结果(" + i + ")" + fileAffix;
-					dir = new File(finallyPath);
-	            }
+				finallyPath = checkSameFileName(UserInfo.decryptPath + fileName + "_解密结果", fileAffix);
 				CommonFileManager.saveBytesToFilepath(cipher, finallyPath);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -257,5 +263,17 @@ public class CryptToolbox extends JPanel implements ActionListener{
 			}
 			t.setText(t.getText() + "\n\n" + "解密完成，结果保存在" + finallyPath + "请前去查看。\n如果解密结果不正确，请检查是否使用了正确的密钥进行解密。");
 		}
+	}
+	
+	private String checkSameFileName(String fileName, String fileAffix) {
+		String finallyPath = fileName + fileAffix;
+		File dir = new File(finallyPath);
+		int i = 0;
+		while(dir.exists() && !dir.isDirectory()){    //有同名文件存在
+			i++;
+			finallyPath = fileName + "(" + i + ")" + fileAffix;
+			dir = new File(finallyPath);
+        }
+		return finallyPath;
 	}
 }
