@@ -7,15 +7,17 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
+import UserDefault.UserInfo;
+
 public class DES {
+	private static final String originalKey = "canbNCJDSBBibSDFASWEgadmvwiNonocwqsf";
 	private static final String path = "/Users/chencaixia/SecretCloud/download/原文.txt";
 	private static final String encryptPath = "/Users/chencaixia/SecretCloud/encrypt/加密结果.txt";
 	private static final String decryptPath = "/Users/chencaixia/SecretCloud/decrypt/解密结果.txt";
-	private static final String keyPath = "/Users/chencaixia/SecretCloud/key/密钥.txt";
+	private static final String keyOriginalPath = "/Users/chencaixia/SecretCloud/key/原始密钥串.txt";
 	
 	public static void main (String args[]) throws Exception {
-		//获取密钥串，并将其散列为512位，方便后面代理重加密分享，避免用户设置的密钥过长导致pbc不能处理
-		byte[] key = SHA512.SHAByte(CommonFileManager.getBytesFromFilepath(keyPath));
+		byte[] key = generateDefaultKeyToPath(UserInfo.DESkeyPath);
 		//获取指定路径的明文
 		byte[] file = CommonFileManager.getBytesFromFilepath(path);
 		//将明文加密得到密文比特
@@ -28,7 +30,23 @@ public class DES {
 		byte[] decryptFile = DES.decrypt(cipher, key);
 		//将解密得到结果转换成文件存起来
 		CommonFileManager.saveBytesToFilepath(decryptFile, decryptPath);
-	} 
+	}
+	
+	public static byte[] generateDefaultKeyToPath(String path) throws Exception {
+		byte[] key = SHA512.SHAByte(originalKey.getBytes());
+		//将密钥比特转换成文件存起来
+		CommonFileManager.saveBytesToFilepath(key, path);
+		return key;
+	}
+	
+	//根据bytes生成密钥文件，保存在path里
+	public static byte[] generateKeyFromBytesToPath(byte[] bytes, String path) throws Exception {
+		//获取密钥串，并将其散列为512位，方便后面代理重加密分享，避免用户设置的密钥过长导致pbc不能处理
+		byte[] key = SHA512.SHAByte(bytes);
+		//将密钥比特转换成文件存起来
+		CommonFileManager.saveBytesToFilepath(key, path);
+		return key;
+	}
 	
 	public static byte[] encrypt(byte[] data, byte[] key) throws Exception {
 		// DES算法要求有一个可信任的随机数源

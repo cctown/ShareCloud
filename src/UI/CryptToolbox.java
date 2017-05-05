@@ -3,8 +3,14 @@ package UI;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -16,27 +22,41 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
+import UserDefault.UserInfo;
+import encryption.CommonFileManager;
+import encryption.DES;
+
 @SuppressWarnings("serial")
 
 public class CryptToolbox extends JPanel implements ActionListener{
 	private JButton keyB;
 	private JButton fileB;
 	private JButton startB;
+	private JButton genKeyB;
 	private JTextArea t;
 	private JRadioButton encrypt;
 	private JRadioButton decrypt;
 	
+	private Boolean op = true;
 	private String keyTips;
 	private String fileTips;
+	private String keyPath;
+	private String filePath;
 	
-	CryptToolbox() {
+	CryptToolbox() throws Exception {
 		configureLayout();
 		encrypt.addActionListener(this);
 		decrypt.addActionListener(this);
 		keyB.addActionListener(this);
 		fileB.addActionListener(this);
 		startB.addActionListener(this);
-		keyTips = "如果您不修改选择的密钥，将使用默认密钥进行加解密，默认密钥所在路径为"+SettingP.keyPath;
+		genKeyB.addActionListener(this);
+		keyPath = UserInfo.DESkeyPath;
+		File keyfile = new File(keyPath);
+		if (!keyfile.exists()) {
+			DES.generateDefaultKeyToPath(keyPath);
+		}
+		keyTips = "如果您不修改选择的密钥，将使用默认密钥进行加解密，默认密钥所在路径为" + keyPath;
 		fileTips = "请选择需要加密或解密的文件。";
 		t.setText(keyTips + "\n\n" + fileTips);
 	}
@@ -65,18 +85,21 @@ public class CryptToolbox extends JPanel implements ActionListener{
 		cb.add(decrypt);
 		choseP.add(cb, BorderLayout.WEST);
 		
-		JPanel bt = new JPanel(new GridLayout(1, 2, 15, 0));
-		keyB = NomalButton("选择密钥");
+		JPanel bt = new JPanel(new GridLayout(1, 3, 15, 0));
 		fileB = NomalButton("选择文件");
-		bt.add(keyB);
+		keyB = NomalButton("选择密钥");
+		genKeyB = NomalButton("创建新密钥");
 		bt.add(fileB);
+		bt.add(keyB);
+		bt.add(genKeyB);
 		choseP.add(bt, BorderLayout.EAST);
 		
 		centerP.add(choseP, BorderLayout.NORTH);
 		
 		JScrollPane sp = new JScrollPane();
-		t = new JTextArea("显示使用的密钥路径，提醒不修改时使用默认私钥。\n显示将要加密的文件路径。\n加密结果：加密成功/加密失败\n加密成功之后显示文件保存路径。", 10, 30);
+		t = new JTextArea("", 10, 30);
 		t.setEditable(false);
+		t.setMargin(new Insets(5, 5, 100, 5));
 		t.setLineWrap(true);				  //自动换行
 		t.setWrapStyleWord(true);			  //断行不断字
 		sp.setViewportView(t);
@@ -124,28 +147,115 @@ public class CryptToolbox extends JPanel implements ActionListener{
 		Object o = e.getSource();
 		if (o == encrypt) {
 			startB.setText("开始加密");
+			op = true;
 		}
 		else if (o == decrypt) {
 			startB.setText("开始解密");
+			op = false;
 		}
 		else if (o == keyB) {
 			JFileChooser jfile = new JFileChooser();
-			jfile.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			jfile.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			if(jfile.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
-				keyTips = "选择的密钥为" + jfile.getSelectedFile().getPath();
-				t.setText(keyTips + "\n\n" + fileTips);
+				keyPath = jfile.getSelectedFile().getPath();
+				t.setText(t.getText() + "\n\n" + "选择的密钥为" + keyPath);
 			}
 		}
 		else if (o == fileB) {
 			JFileChooser jfile = new JFileChooser();
-			jfile.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			jfile.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			if(jfile.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
-				fileTips = "选择的文件为" +jfile.getSelectedFile().getPath();
-				t.setText(keyTips + "\n\n" + fileTips);
+				filePath = jfile.getSelectedFile().getPath();
+				t.setText(t.getText() + "\n\n" + "选择的文件为" + filePath);
 			}
 		}
 		else if (o == startB) {
-			
+			startOperation();
+		}
+	}
+	
+	private void startOperation() {
+		byte[] key;
+		byte[] fileBytes;
+		byte[] cipher;
+		String fileName;
+		String fileAffix;
+		//获取指定路径的密钥
+		try {
+			key = CommonFileManager.getBytesFromFilepath(keyPath);
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+			t.setText(t.getText() + "\n\n" + "选中密钥有误，请检查路径并重新选择");
+			return;
+		}
+		//获取指定路径的明文
+		try {
+			fileBytes = CommonFileManager.getBytesFromFilepath(filePath);
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+			t.setText(t.getText() + "\n\n" + "选中文件有误，请检查路径重新选择");
+			return;
+		}
+		File file = new File(filePath);
+		String fullName = file.getName();
+		fileName = fullName.substring(0, fullName.lastIndexOf("."));;
+		fileAffix = fullName.substring(fullName.lastIndexOf("."));   //获取后缀名
+		String finallyPath;
+		if(op) { //加密
+			try {
+				cipher = DES.encrypt(fileBytes, key);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				t.setText(t.getText() + "\n\n加密失败，详细信息如下：\n\n" + e1.getMessage());
+				return;
+			}
+			try {
+				finallyPath = UserInfo.encryptPath + fileName + "_加密结果" + fileAffix;
+				File dir = new File(finallyPath);
+				int i = 0;
+				while(dir.exists() && !dir.isDirectory()){    //有同名文件存在
+					i++;
+					finallyPath = UserInfo.encryptPath  + fileName + "_加密结果(" + i + ")" + fileAffix;
+					dir = new File(finallyPath);
+	            }
+				CommonFileManager.saveBytesToFilepath(cipher, finallyPath);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				t.setText(t.getText() + "\n\n保存文件失败，详细信息如下：\n\n" + e1.getMessage());
+				return;
+			}
+			t.setText(t.getText() + "\n\n" + "加密完成，结果保存在" + finallyPath + "，请前去查看。");
+		}
+		else {  //解密
+			try {
+				cipher = DES.decrypt(fileBytes, key);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				t.setText(t.getText() + "\n\n解密失败，详细信息如下：\n\n" + e1.getMessage());
+				return;
+			}
+			try {
+				finallyPath = UserInfo.decryptPath + fileName + "_解密结果" + fileAffix;
+				File dir = new File(finallyPath);
+				int i = 0;
+				while(dir.exists() && !dir.isDirectory()){    //有同名文件存在
+					i++;
+					finallyPath = UserInfo.decryptPath  + fileName + "_解密结果(" + i + ")" + fileAffix;
+					dir = new File(finallyPath);
+	            }
+				CommonFileManager.saveBytesToFilepath(cipher, finallyPath);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				t.setText(t.getText() + "\n\n保存文件失败，详细信息如下：\n\n" + e1.getMessage());
+				return;
+			}
+			t.setText(t.getText() + "\n\n" + "解密完成，结果保存在" + finallyPath + "请前去查看。\n如果解密结果不正确，请检查是否使用了正确的密钥进行解密。");
 		}
 	}
 }

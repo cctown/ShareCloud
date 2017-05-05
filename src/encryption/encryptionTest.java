@@ -7,6 +7,7 @@ import SecretCloudProxy.ReencryptionCipher;
 import SecretCloudProxy.ReencryptionKey;
 import SecretCloudProxy.ShareCipher;
 import UI.SettingP;
+import UserDefault.UserInfo;
 import it.unisa.dia.gas.jpbc.Element;
 
 public class encryptionTest {
@@ -66,13 +67,13 @@ public class encryptionTest {
 	}
 	
 	private void getskpk() {
-		byte[] skAbyte = (byte[])CommonFileManager.readObjectFromFile(SettingP.keyPath + CommonDef.secretKeyAffix(IDA));
-		byte[] skBbyte = (byte[])CommonFileManager.readObjectFromFile(SettingP.keyPath + CommonDef.secretKeyAffix(IDB));
+		byte[] skAbyte = (byte[])CommonFileManager.readObjectFromFile(UserInfo.keyPath + CommonDef.secretKeyAffix(IDA));
+		byte[] skBbyte = (byte[])CommonFileManager.readObjectFromFile(UserInfo.keyPath + CommonDef.secretKeyAffix(IDB));
 		skA = module.newG1ElementFromBytes(skAbyte).getImmutable();
 		skB = module.newG1ElementFromBytes(skBbyte).getImmutable();
 		
-		pkA = (PublicKey)CommonFileManager.readObjectFromFile(SettingP.keyPath + CommonDef.publicKeyAffix(IDA));
-		pkB = (PublicKey)CommonFileManager.readObjectFromFile(SettingP.keyPath + CommonDef.publicKeyAffix(IDB));
+		pkA = (PublicKey)CommonFileManager.readObjectFromFile(UserInfo.keyPath + CommonDef.publicKeyAffix(IDA));
+		pkB = (PublicKey)CommonFileManager.readObjectFromFile(UserInfo.keyPath + CommonDef.publicKeyAffix(IDB));
 	}
 	
 	//代理重加密

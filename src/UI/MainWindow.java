@@ -18,7 +18,7 @@ public class MainWindow extends JFrame implements Observer {
 	private categoryP cp = new categoryP();
 	private String cardName[] = {"home", "category"};
 	private CardLayout card = new CardLayout();
-	MainWindow() {
+	MainWindow() throws Exception {
 		setTitle("密云-开发中");
 		setSize(GlobalDef.bigWindowWidth, GlobalDef.bigWindowHeight);
 		setLocationRelativeTo(null);

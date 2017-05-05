@@ -5,6 +5,7 @@ import SecretCloudProxy.CommonDef;
 import SecretCloudProxy.PublicKey;
 import SecretCloudProxy.ReencryptionKey;
 import UI.SettingP;
+import UserDefault.UserInfo;
 import it.unisa.dia.gas.jpbc.Element;
 
 public class keyGen {
@@ -14,13 +15,13 @@ public class keyGen {
 		Element xA = module.newGTRandomElement().getImmutable();
 		//私钥 skA = gA^s^xA
 		Element sk = dA.duplicate().powZn(xA).getImmutable();
-		CommonFileManager.writeObjectToFile(sk.toBytes(), SettingP.keyPath + CommonDef.secretKeyAffix(ID));
+		CommonFileManager.writeObjectToFile(sk.toBytes(), UserInfo.keyPath + CommonDef.secretKeyAffix(ID));
 		 
 		//公钥 pkA = (gA, g^s^xA)), 其中gA= H1(IDA)
 		Element gA = module.H1(ID.getBytes()).getImmutable();
 		Element gsxA = module.getgps().duplicate().powZn(xA).getImmutable();
 		PublicKey pk = new PublicKey(gA, gsxA);
-		CommonFileManager.writeObjectToFile(pk, SettingP.keyPath + CommonDef.publicKeyAffix(ID));
+		CommonFileManager.writeObjectToFile(pk, UserInfo.keyPath + CommonDef.publicKeyAffix(ID));
 	}
 	
 	//生成重加密密钥
