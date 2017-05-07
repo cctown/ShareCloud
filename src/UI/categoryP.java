@@ -16,7 +16,7 @@ public class categoryP extends JPanel implements Observer {
 	private detailP detail;
 	private NavigationBar bar;
 	
-	categoryP() throws Exception {
+	categoryP(String userName) throws Exception {
 		setLayout(new BorderLayout());
 		bar = new NavigationBar();
 		add(bar, BorderLayout.WEST);
@@ -29,8 +29,9 @@ public class categoryP extends JPanel implements Observer {
 	}
 	
 	private class detailP extends JPanel {
-		String cardName[] = {"cloud", "receive", "tool", "set"};
+		String cardName[] = {"cloud", "share", "receive", "tool", "set"};
 		MyCloud cloud;
+		MyShare share;
 		ReceiveShare receive;
 		CryptToolbox tool;
 		SettingP set;
@@ -39,14 +40,16 @@ public class categoryP extends JPanel implements Observer {
 		detailP() throws Exception {
 			setLayout(card);
 			cloud = new MyCloud();
+			share = new MyShare();
 			receive = new ReceiveShare();
 			tool = new CryptToolbox();
 			set = new SettingP();
 			
 			add(cardName[0], cloud);
-			add(cardName[1], receive);
-			add(cardName[2], tool);
-			add(cardName[3], set);
+			add(cardName[1], share);
+			add(cardName[2], receive);
+			add(cardName[3], tool);
+			add(cardName[4], set);
 			
 			observeEvent.getInstance().addObserver(cloud);
 		}
@@ -59,14 +62,17 @@ public class categoryP extends JPanel implements Observer {
 		    	detail.card.show(detail, detail.cardName[0]);
 		    	detail.cloud.pageToCloud();
 		    }
-		    else if (arg == EventDef.receiveTap) {
+		    else if (arg == EventDef.shareTap) {
 		    	detail.card.show(detail, detail.cardName[1]);
 		    }
-		    else if (arg == EventDef.toolTap) {
+		    else if (arg == EventDef.receiveTap) {
 		    	detail.card.show(detail, detail.cardName[2]);
 		    }
-		    else if (arg == EventDef.setTap) {
+		    else if (arg == EventDef.toolTap) {
 		    	detail.card.show(detail, detail.cardName[3]);
+		    }
+		    else if (arg == EventDef.setTap) {
+		    	detail.card.show(detail, detail.cardName[4]);
 		    }
 		}
 	}
@@ -77,14 +83,17 @@ public class categoryP extends JPanel implements Observer {
 			detail.card.show(detail, detail.cardName[0]);
 			detail.cloud.pageToCloud();
 		}
-		else if (p == GlobalDef.receive) {
+		else if (p == GlobalDef.share) {
 			detail.card.show(detail, detail.cardName[1]);
 		}
-		else if (p == GlobalDef.tool) {
+		else if (p == GlobalDef.receive) {
 			detail.card.show(detail, detail.cardName[2]);
 		}
-		else if (p == GlobalDef.set) {
+		else if (p == GlobalDef.tool) {
 			detail.card.show(detail, detail.cardName[3]);
+		}
+		else if (p == GlobalDef.set) {
+			detail.card.show(detail, detail.cardName[4]);
 		}
 	}
 }

@@ -18,6 +18,7 @@ public class NavigationBar extends JPanel {
 	
 	private NomalPanel home;
 	private NomalPanel cloud;
+	private NomalPanel share;
 	private NomalPanel receive;
 	private NomalPanel tool;
 	private NomalPanel set;
@@ -64,11 +65,13 @@ public class NavigationBar extends JPanel {
 			setLayout(new GridLayout(13, 1, 15, 0));
 			
 			cloud = new NomalPanel(GlobalDef.cloud, GlobalDef.cloudImage_1);
+			share = new NomalPanel(GlobalDef.share, GlobalDef.shareImage_1);
 			receive = new NomalPanel(GlobalDef.receive, GlobalDef.receiveImage_1);
 			tool = new NomalPanel(GlobalDef.tool, GlobalDef.toolImage_1);
 			set = new NomalPanel(GlobalDef.set, GlobalDef.setImage_1);
 			
 			add(cloud);
+			add(share);
 			add(receive);
 			add(tool);
 			add(set);
@@ -148,6 +151,11 @@ public class NavigationBar extends JPanel {
 			cloud.icon.setIcon(new ImageIcon(GlobalDef.cloudImage_2));
 			observeEvent.getInstance().setEventTag(EventDef.cloudTap);
 		}
+		else if (p == GlobalDef.share) {
+			share.label.setForeground(GlobalDef.selecetdGray);
+			share.icon.setIcon(new ImageIcon(GlobalDef.shareImage_2));
+			observeEvent.getInstance().setEventTag(EventDef.shareTap);
+		}
 		else if (p == GlobalDef.receive) {
 			receive.label.setForeground(GlobalDef.selecetdGray);
 			receive.icon.setIcon(new ImageIcon(GlobalDef.receiveImage_2));
@@ -175,6 +183,10 @@ public class NavigationBar extends JPanel {
 		if (t == GlobalDef.cloud) {
 			cloud.label.setForeground(GlobalDef.deepPurple);
 			cloud.icon.setIcon(new ImageIcon(GlobalDef.cloudImage_1));
+		}
+		else if (t == GlobalDef.share) {
+			share.label.setForeground(GlobalDef.deepPurple);
+			share.icon.setIcon(new ImageIcon(GlobalDef.shareImage_1));
 		}
 		else if (t == GlobalDef.receive) {
 			receive.label.setForeground(GlobalDef.deepPurple);

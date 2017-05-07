@@ -9,21 +9,27 @@ import javax.swing.JPanel;
 
 import Event.EventDef;
 import Event.observeEvent;
+import UserDefault.UserInfo;
 
 @SuppressWarnings("serial")
 
 public class MainWindow extends JFrame implements Observer {
+	public static String loginUserName;
 	private JPanel p;
-	private homeP home = new homeP();
-	private categoryP cp = new categoryP();
+	private homeP home;
+	private categoryP cp;
 	private String cardName[] = {"home", "category"};
 	private CardLayout card = new CardLayout();
-	MainWindow() throws Exception {
-		setTitle("密云-开发中");
+	MainWindow(String userName) throws Exception {
+		loginUserName = userName;
+		setTitle("密云 - " + userName);
 		setSize(GlobalDef.bigWindowWidth, GlobalDef.bigWindowHeight);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		home = new homeP(userName);
+		cp = new categoryP(userName);
 		p = new JPanel(card);
 		p.add(cardName[0], home);
 		p.add(cardName[1], cp);
@@ -41,6 +47,10 @@ public class MainWindow extends JFrame implements Observer {
 		    else if (arg == EventDef.bigCloudTap) {
 		    	card.show(p, cardName[1]);
 		    	cp.changeToPage(GlobalDef.cloud);
+		    }
+		    else if (arg == EventDef.bigShareTap) {
+		    	card.show(p, cardName[1]);
+		    	cp.changeToPage(GlobalDef.share);
 		    }
 		    else if (arg == EventDef.bigReceiveTap) {
 		    	card.show(p, cardName[1]);

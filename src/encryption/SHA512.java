@@ -9,11 +9,11 @@ public class SHA512 {
 		return SHAByte(b, "SHA-512");
 	}
 	
-	public static byte[] SHAStringToString(final String strText) {  
+	public static byte[] SHAStringToByte(final String strText) {  
 		return SHAToByte(strText, "SHA-512");
 	}
 	
-	public static String SHAStringToByte(final String strText) {  
+	public static String SHAStringToString(final String strText) {  
 		return SHAToString(strText, "SHA-512");
 	}
 	

@@ -52,7 +52,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 		fileB.addActionListener(this);
 		startB.addActionListener(this);
 		genKeyB.addActionListener(this);
-		keyPath = UserInfo.DESkeyPath + UserInfo.DefaultDESkeyName;
+		keyPath = UserInfo.DESkeyPath + UserInfo.defaultDESkeyName;
 		File keyfile = new File(keyPath);
 		if (!keyfile.exists()) {
 			DES.generateDefaultKeyToPath(keyPath);

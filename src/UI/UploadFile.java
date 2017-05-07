@@ -20,14 +20,16 @@ import Event.observeEvent;
 @SuppressWarnings("serial")
 public class UploadFile extends JPanel implements ActionListener {
 	JButton backB;
-	JButton choseB;
+	JButton choseFileB;
+	JButton choseKeyB;
 	JButton startB;
 	JTextArea t;
 	
 	UploadFile() {
 		configureLayout();
 		backB.addActionListener(this);
-		choseB.addActionListener(this);
+		choseFileB.addActionListener(this);
+		choseKeyB.addActionListener(this);
 		startB.addActionListener(this);
 	}
 	
@@ -49,8 +51,10 @@ public class UploadFile extends JPanel implements ActionListener {
 		titleP.add(title);
 		
 		JPanel jc = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
-		choseB = NomalButton("选择文件", true);
-		jc.add(choseB);
+		choseFileB = NomalButton("选择文件", true);
+		jc.add(choseFileB);
+		choseKeyB = NomalButton("选择密钥", true);
+		jc.add(choseKeyB);
 		titleP.add(jc, BorderLayout.SOUTH);
 		jn.add(titleP, BorderLayout.NORTH);
 		
@@ -105,7 +109,10 @@ public class UploadFile extends JPanel implements ActionListener {
 		if (o == backB) {
 			observeEvent.getInstance().setEventTag(EventDef.backToCloud);
 		}
-		else if (o == choseB) {
+		else if (o == choseFileB) {
+			
+		}
+		else if(o == choseKeyB) {
 			
 		}
 		else if (o == startB) {

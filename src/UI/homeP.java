@@ -23,12 +23,13 @@ public class homeP extends JPanel implements ActionListener {
 	private JPanel iconPanel;
 	private JButton exitButton;
 	private NomalPanel cloud;
+	private NomalPanel share;
 	private NomalPanel receive;
 	private NomalPanel tool;
 	private NomalPanel set;
 	
-	public homeP() {
-		setLayout(new BorderLayout(150, 10));
+	public homeP(String userName) {
+		setLayout(new BorderLayout(100, 10));
 		JPanel jw = new JPanel();
 		add(jw, BorderLayout.WEST);
 		banner = bannerP();
@@ -82,13 +83,15 @@ public class homeP extends JPanel implements ActionListener {
 	
 	private JPanel iconPanel() {
 		JPanel jp = new JPanel();
-		jp.setLayout(new GridLayout(1, 4, 10, 15));
+		jp.setLayout(new GridLayout(1, 5, 10, 15));
 		cloud = new NomalPanel(GlobalDef.cloud, GlobalDef.cloudImage_0);
+		share = new NomalPanel(GlobalDef.share, GlobalDef.shareImage_0);
 		receive = new NomalPanel(GlobalDef.receive, GlobalDef.receiveImage_0);
 		tool = new NomalPanel(GlobalDef.tool, GlobalDef.toolImage_0);
 		set = new NomalPanel(GlobalDef.set, GlobalDef.setImage_0);
 		
 		jp.add(cloud);
+		jp.add(share);
 		jp.add(receive);
 		jp.add(tool);
 		jp.add(set);
@@ -112,6 +115,9 @@ public class homeP extends JPanel implements ActionListener {
 			NomalPanel o = (NomalPanel)e.getSource();
 			if (o == cloud) {
 				observeEvent.getInstance().setEventTag(EventDef.bigCloudTap);
+			}
+			else if (o == share) {
+				observeEvent.getInstance().setEventTag(EventDef.bigShareTap);
 			}
 			else if (o == receive) {
 				observeEvent.getInstance().setEventTag(EventDef.bigReceiveTap);

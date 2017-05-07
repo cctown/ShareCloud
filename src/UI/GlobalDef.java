@@ -12,6 +12,7 @@ public class GlobalDef {
 	public static final int bigWindowHeight = 669;
 	public static final String home = "主页";
 	public static final String cloud = "我的云盘";
+	public static final String share = "我的分享";
 	public static final String up = "上传文件";
 	public static final String receive = "收到分享";
 	public static final String tool = "加解密工具箱";
@@ -19,15 +20,18 @@ public class GlobalDef {
 	public static final String set = "设置";
 	
 	public static final String cloudImage_0 = "images/我的云盘.png";
+	public static final String shareImage_0 = "images/分享.png";
 	public static final String receiveImage_0 = "images/收到.png";
 	public static final String toolImage_0 = "images/工具箱.png";
 	public static final String setImage_0 = "images/设置.png";
 	public static final String homeImage_1 = "images/小主页.png";
 	public static final String cloudImage_1 = "images/小我的云盘.png";
+	public static final String shareImage_1 = "images/小分享.png";
 	public static final String receiveImage_1 = "images/小收到.png";
 	public static final String toolImage_1 = "images/小工具箱.png";
 	public static final String setImage_1 = "images/小设置.png";
 	public static final String cloudImage_2 = "images/小我的云盘2.png";
+	public static final String shareImage_2 = "images/小分享2.png";
 	public static final String receiveImage_2 = "images/小收到2.png";
 	public static final String toolImage_2 = "images/小工具箱2.png";
 	public static final String setImage_2 = "images/小设置2.png";
