@@ -13,7 +13,7 @@ public class encryptionModule {
 	private static Element g;
 	private static Element gps;
 	
-	public encryptionModule() {
+	public encryptionModule() throws Exception {
 		pairing = PairingFactory.getPairing(paramsPath + "a.properties");
 		params = (PublicParameters)CommonFileManager.readObjectFromFile(paramsPath + CommonDef.paramsAffix);
 		g = newG1ElementFromBytes(params.g).getImmutable();
@@ -26,7 +26,7 @@ public class encryptionModule {
 	}
 	//	将GT元素哈希到G1群
 	public Element H2(Element e) {
-		byte[] b = new SHA512().SHAByte(e.toBytes());
+		byte[] b = SHA512.SHAByte(e.toBytes());
 		return pairing.getG1().newRandomElement().setFromHash(b, 0, b.length);
 	}
 	

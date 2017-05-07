@@ -29,24 +29,14 @@ public class CommonFileManager {
 	    }
 	}
 	
-	public static Object readObjectFromFile(String path) {
+	public static Object readObjectFromFile(String path) throws Exception {
 		Object temp=null;
 	    File file =new File(path);
 	    FileInputStream in;
-	    try {
-	    	in = new FileInputStream(file);
-	    	ObjectInputStream objIn = new ObjectInputStream(in);
-		    temp = objIn.readObject();
-		    objIn.close();
-		    System.out.println("成功读取该路径的对象：" + path);
-	    }
-	    catch (IOException e) {
-	    	System.out.println("读取失败");
-		      e.printStackTrace();
-	    }
-	    catch (ClassNotFoundException e) {
-	    	e.printStackTrace();
-	    }
+	    in = new FileInputStream(file);
+    	ObjectInputStream objIn = new ObjectInputStream(in);
+	    temp = objIn.readObject();
+	    objIn.close();
 	    return temp;
 	}
 	

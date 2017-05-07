@@ -46,12 +46,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 	
 	CryptToolbox() throws Exception {
 		configureLayout();
-		encrypt.addActionListener(this);
-		decrypt.addActionListener(this);
-		keyB.addActionListener(this);
-		fileB.addActionListener(this);
-		startB.addActionListener(this);
-		genKeyB.addActionListener(this);
+		
 		keyPath = UserInfo.DESkeyPath + UserInfo.defaultDESkeyName;
 		File keyfile = new File(keyPath);
 		if (!keyfile.exists()) {
@@ -65,15 +60,14 @@ public class CryptToolbox extends JPanel implements ActionListener{
 	private void configureLayout() {
 		setLayout(new BorderLayout(70, 50));
 		JPanel centerP = new JPanel(new BorderLayout(10, 10));
-		
 		JPanel choseP = new JPanel(new BorderLayout(10, 10));
-		
 		JPanel cb = new JPanel(new GridLayout(1, 3, 5, 0));
-		
 		encrypt = new JRadioButton("加密", true);
+		encrypt.addActionListener(this);
 		encrypt.setFont(new java.awt.Font(GlobalDef.TableFontName, 0, 14));
 		encrypt.setForeground(GlobalDef.deepPurple);
 		decrypt = new JRadioButton("解密", false);
+		decrypt.addActionListener(this);
 		decrypt.setFont(new java.awt.Font(GlobalDef.TableFontName, 0, 14));
 		decrypt.setForeground(GlobalDef.deepPurple);
 		ButtonGroup BG = new ButtonGroup();
@@ -88,13 +82,15 @@ public class CryptToolbox extends JPanel implements ActionListener{
 		
 		JPanel bt = new JPanel(new GridLayout(1, 3, 15, 0));
 		fileB = NomalButton("选择文件");
+		fileB.addActionListener(this);
 		keyB = NomalButton("选择密钥");
+		keyB.addActionListener(this);
 		genKeyB = NomalButton("创建新密钥");
+		genKeyB.addActionListener(this);
 		bt.add(fileB);
 		bt.add(keyB);
 		bt.add(genKeyB);
 		choseP.add(bt, BorderLayout.EAST);
-		
 		centerP.add(choseP, BorderLayout.NORTH);
 		
 		JScrollPane sp = new JScrollPane();
@@ -108,6 +104,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 		
 		JPanel bP = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 10));
 		startB = NomalButton("开始加密");
+		startB.addActionListener(this);
 		bP.add(startB);
 		centerP.add(bP, BorderLayout.SOUTH);
 		

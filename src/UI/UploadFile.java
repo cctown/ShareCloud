@@ -6,9 +6,12 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -16,21 +19,34 @@ import javax.swing.SwingConstants;
 
 import Event.EventDef;
 import Event.observeEvent;
+import SecretCloudProxy.Ciphertext;
+import SecretCloudProxy.CommonDef;
+import SecretCloudProxy.PublicKey;
+import SecretCloudProxy.ShareCipher;
+import UserDefault.UserHelper;
+import UserDefault.UserInfo;
+import encryption.CommonFileManager;
+import encryption.DES;
+import encryption.encryptTask;
+import encryption.encryptionModule;
+import encryption.shareCipherTask;
+import it.unisa.dia.gas.jpbc.Element;
 
 @SuppressWarnings("serial")
 public class UploadFile extends JPanel implements ActionListener {
+	String userName;
 	JButton backB;
 	JButton choseFileB;
 	JButton choseKeyB;
 	JButton startB;
 	JTextArea t;
+	String filePath;
+	String keyPath;
 	
-	UploadFile() {
+	UploadFile(String name) {
+		userName = name;
 		configureLayout();
-		backB.addActionListener(this);
-		choseFileB.addActionListener(this);
-		choseKeyB.addActionListener(this);
-		startB.addActionListener(this);
+		
 	}
 	
 	private void configureLayout() {
@@ -40,6 +56,7 @@ public class UploadFile extends JPanel implements ActionListener {
 		JPanel titleP = new JPanel(new BorderLayout(5, 0));
 		JPanel jb = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
 		backB = NomalButton("返回", false);
+		backB.addActionListener(this);
 		jb.add(backB);
 		titleP.add(jb, BorderLayout.NORTH);
 		
@@ -52,8 +69,10 @@ public class UploadFile extends JPanel implements ActionListener {
 		
 		JPanel jc = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
 		choseFileB = NomalButton("选择文件", true);
+		choseFileB.addActionListener(this);
 		jc.add(choseFileB);
 		choseKeyB = NomalButton("选择密钥", true);
+		choseKeyB.addActionListener(this);
 		jc.add(choseKeyB);
 		titleP.add(jc, BorderLayout.SOUTH);
 		jn.add(titleP, BorderLayout.NORTH);
@@ -69,6 +88,7 @@ public class UploadFile extends JPanel implements ActionListener {
 		
 		JPanel bP = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 20));
 		startB = NomalButton("开始上传", true);
+		startB.addActionListener(this);
 		bP.add(startB);
 		jn.add(bP, BorderLayout.SOUTH);
 		
@@ -110,13 +130,88 @@ public class UploadFile extends JPanel implements ActionListener {
 			observeEvent.getInstance().setEventTag(EventDef.backToCloud);
 		}
 		else if (o == choseFileB) {
-			
+			JFileChooser jfile = new JFileChooser();
+			jfile.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			if(jfile.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+				filePath = jfile.getSelectedFile().getPath();
+				t.setText(t.getText() + "\n\n" + "选择的文件为" + filePath);
+			}
 		}
 		else if(o == choseKeyB) {
-			
+			JFileChooser jfile = new JFileChooser();
+			jfile.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			if(jfile.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+				keyPath = jfile.getSelectedFile().getPath();
+				t.setText(t.getText() + "\n\n" + "选择的密钥为" + keyPath);
+			}
 		}
 		else if (o == startB) {
-			
+			startOperation(userName);
 		}
+	}
+	
+	private void startOperation(String id) {
+		//检查各个配置文件，确保加密使用的密钥、公开参数等文件在
+		if(UserHelper.checkUserInfo(id)) {
+			t.setText(t.getText() + "\n\n" + "用户信息不完整，无法加密文件上传");
+			return;
+		}
+		
+		byte[] keyBytes;
+		byte[] fileBytes;
+		byte[] cipher;
+		//获取指定路径的密钥
+		try {
+			keyBytes = CommonFileManager.getBytesFromFilepath(keyPath);
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+			t.setText(t.getText() + "\n\n" + "选中密钥有误，选中密钥路径为：" + keyPath + "，请检查该路径并重新选择");
+			return;
+		}
+		//获取指定路径的明文
+		try {
+			fileBytes = CommonFileManager.getBytesFromFilepath(filePath);
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+			t.setText(t.getText() + "\n\n" + "选中文件有误，选中文件路径为：" + filePath + "请检查该路径并重新选择");
+			return;
+		}
+		//加密源文件
+		try {
+			cipher = DES.encrypt(fileBytes, keyBytes);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			t.setText(t.getText() + "\n\n" + "加密文件失败，详细信息如下：" + e.getMessage());
+			return;
+		}
+		
+		//加密DES密钥，用于代理重加密分享
+		encryptionModule module;
+		try {
+			module = new encryptionModule();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			t.setText(t.getText() + "\n\n" + "加密模块初始化失败，无法加密文件上传。");
+			return;
+		}
+		PublicKey pk;
+		try {
+			pk = (PublicKey)CommonFileManager.readObjectFromFile(UserInfo.keyPath + CommonDef.publicKeyAffix(id));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			t.setText(t.getText() + "\n\n" + "公钥文件丢失，无法加密文件上传。");
+			return;
+		}
+		Element t = module.newGTRandomElement().getImmutable();
+		ShareCipher shareCipher = shareCipherTask.encryptShareMsg(module, keyBytes, pk, t);
+		
+		//加密条件值t
+		Ciphertext tCipher = encryptTask.encryptMsg(module, t.toBytes(), pk, t);
+		
 	}
 }

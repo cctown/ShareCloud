@@ -30,13 +30,13 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 	JButton shareB;
 	JButton deleteB;
 	
-	MyCloud() {
+	MyCloud(String name) {
 		setLayout(new BorderLayout());
 		j = new JPanel();
 		j.setLayout(card);
 		
 		cloud = new cloud();
-		up = new UploadFile();
+		up = new UploadFile(name);
 		share = new ShareFile();
 		j.add(cardName[0], cloud);
 		j.add(cardName[1], up);

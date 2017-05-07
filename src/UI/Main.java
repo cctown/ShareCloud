@@ -1,7 +1,6 @@
 package UI;
 
 import Event.observeEvent;
-import encryption.keyGen;
 
 public class Main {
 	static LoginWindow loginWindow;

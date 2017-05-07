@@ -1,16 +1,12 @@
 package com;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JOptionPane;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -26,7 +22,7 @@ public class LoginServer {
 	public static void signup(String name, char[] password) {
 		String passwordString = SHA512.SHAStringToString(String.valueOf(password));
 		HttpClient httpClient = HttpClientUtil.createDefaultHttpClient();
-		PostMethod post = new PostMethod("/bscx/registry.htm");
+		PostMethod post = new PostMethod("/ProxyServer/registry.htm");
 		List<NameValuePair> paramList = new ArrayList<NameValuePair>();
 		NameValuePair namePair = new NameValuePair("id", name);
 		NameValuePair passwordPair = new NameValuePair("password", passwordString);
@@ -34,10 +30,6 @@ public class LoginServer {
 		paramList.add(passwordPair);
 		post.setRequestBody(paramList.toArray(new NameValuePair[paramList.size()]));
 		post.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "utf-8");
-		// 设置请求超时为 5 秒
-		post.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 5000);
-		// 使用系统提供的默认的恢复策略
-		post.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
 		httpClient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
 		try {
 			httpClient.executeMethod(post);
@@ -55,7 +47,7 @@ public class LoginServer {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, e.getMessage(), "服务器错误", JOptionPane.ERROR_MESSAGE);
 		}finally { 
 			post.releaseConnection(); 
 		}
@@ -64,7 +56,7 @@ public class LoginServer {
 	public static void login(String name, char[] password) {
 		String passwordString = SHA512.SHAStringToString(String.valueOf(password));
 		HttpClient httpClient = HttpClientUtil.createDefaultHttpClient();
-		PostMethod post = new PostMethod("/bscx/loginCheck.htm");
+		PostMethod post = new PostMethod("/ProxyServer/loginCheck.htm");
 		List<NameValuePair> paramList = new ArrayList<NameValuePair>();
 		NameValuePair namePair = new NameValuePair("id", name);
 		NameValuePair passwordPair = new NameValuePair("password", passwordString);
@@ -72,9 +64,6 @@ public class LoginServer {
 		paramList.add(passwordPair);
 		post.setRequestBody(paramList.toArray(new NameValuePair[paramList.size()]));
 		post.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "utf-8");
-		// 设置请求超时为 5 秒
-		post.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 5000);
-		// 使用系统提供的默认的恢复策略
 		post.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
 		httpClient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
 		try {
@@ -93,7 +82,7 @@ public class LoginServer {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, e.getMessage(), "服务器错误", JOptionPane.ERROR_MESSAGE);
 		}finally { 
 			post.releaseConnection(); 
 		}

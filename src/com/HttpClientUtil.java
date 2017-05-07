@@ -9,6 +9,11 @@ public class HttpClientUtil {
 		return httpClient;
 	}
 	
+	public static HttpClient createDefaultKGCHttpClient() {
+		HttpClient httpClient = HttpClientUtil.createHttpClient("www.miyun.com", 8090);
+		return httpClient;
+	}
+	
 	public static HttpClient createHttpClient(String appServer, int port) {
 		HttpClient httpClient = new HttpClient();
 		httpClient.getHostConfiguration().setHost(appServer, port, "http");

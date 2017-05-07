@@ -8,7 +8,7 @@ import UI.SettingP;
 import UserDefault.UserInfo;
 import it.unisa.dia.gas.jpbc.Element;
 
-public class keyGen {
+public class KeyGen {
 	//生成公私钥对
 	public static void skpkGen(encryptionModule module, String ID, Element dA) {
 		//随机选择一个整数xA ∈ Z∗p
