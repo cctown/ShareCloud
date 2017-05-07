@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.NameValuePair;
@@ -33,14 +34,13 @@ public class LoginServer {
 		paramList.add(passwordPair);
 		post.setRequestBody(paramList.toArray(new NameValuePair[paramList.size()]));
 		post.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "utf-8");
+		// 设置请求超时为 5 秒
+		post.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 5000);
+		// 使用系统提供的默认的恢复策略
+		post.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
 		httpClient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
 		try {
 			httpClient.executeMethod(post);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			byte[] responseBody = post.getResponseBody();
 			String s = new String(responseBody,"UTF-8");
 			JSONObject obj = JSONObject.parseObject(s);
@@ -55,6 +55,7 @@ public class LoginServer {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
 		}finally { 
 			post.releaseConnection(); 
 		}
@@ -71,14 +72,13 @@ public class LoginServer {
 		paramList.add(passwordPair);
 		post.setRequestBody(paramList.toArray(new NameValuePair[paramList.size()]));
 		post.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "utf-8");
+		// 设置请求超时为 5 秒
+		post.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 5000);
+		// 使用系统提供的默认的恢复策略
+		post.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
 		httpClient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
 		try {
 			httpClient.executeMethod(post);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			byte[] responseBody = post.getResponseBody();
 			String s = new String(responseBody,"UTF-8");
 			JSONObject obj = JSONObject.parseObject(s);
@@ -93,6 +93,7 @@ public class LoginServer {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
 		}finally { 
 			post.releaseConnection(); 
 		}
