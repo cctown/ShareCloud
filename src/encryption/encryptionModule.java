@@ -2,6 +2,7 @@ package encryption;
 
 import SecretCloudProxy.CommonDef;
 import SecretCloudProxy.PublicParameters;
+import UI.GlobalDef;
 import it.unisa.dia.gas.jpbc.Element;
 import it.unisa.dia.gas.jpbc.Pairing;
 import it.unisa.dia.gas.plaf.jpbc.pairing.PairingFactory;
@@ -9,7 +10,7 @@ import it.unisa.dia.gas.plaf.jpbc.pairing.PairingFactory;
 public class encryptionModule {
 	private static Pairing pairing;
 	private static PublicParameters params;
-	private static String paramsPath = "/Users/chencaixia/SecretCloud/params/";
+	private static String paramsPath = GlobalDef.paramsPath;
 	private static Element g;
 	private static Element gps;
 	

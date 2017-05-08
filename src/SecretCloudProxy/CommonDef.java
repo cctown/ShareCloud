@@ -15,7 +15,7 @@ public class CommonDef {
 		return ID + "_publicKey.dat";
 	}
 	
-	public static String reencryptionKeyAffix(String ownerID, String receiverID) {
-		return ownerID + "-" +receiverID + "_reencryptionKey.dat";
+	public static String reencryptionKeyAffix(String ownerID, String receiverID, String fileName) {
+		return ownerID + "-" +receiverID + "-" + fileName + "_rk.dat";
 	}
 }

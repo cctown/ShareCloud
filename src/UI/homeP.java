@@ -28,7 +28,7 @@ public class homeP extends JPanel implements ActionListener {
 	private NomalPanel tool;
 	private NomalPanel set;
 	
-	public homeP(String userName) {
+	public homeP() {
 		setLayout(new BorderLayout(100, 10));
 		JPanel jw = new JPanel();
 		add(jw, BorderLayout.WEST);

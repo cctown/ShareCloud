@@ -263,12 +263,11 @@ public class LoginWindow extends JFrame implements MouseListener, ActionListener
 			if (arg == EventDef.loginSuccess) {
 				try {
 					String name = nameTextField.getText();
-					MainWindow mainW = new MainWindow(name);
-					observeEvent.getInstance().addObserver(mainW);
-					mainW.setVisible(true);
+					UserInfo.getInstance().setUserName(name);
 					setVisible(false);
-					clearInput();
+					observeEvent.getInstance().setEventTag(EventDef.readyToMainWindow);
 					UserHelper.checkUserInfo(name);
+					clearInput();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

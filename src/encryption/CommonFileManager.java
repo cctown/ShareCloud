@@ -1,10 +1,10 @@
 package encryption;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,6 +14,9 @@ public class CommonFileManager {
 	
 	public static void writeObjectToFile(Object obj, String path) {
 		File file =new File(path);
+		if(!file.exists() && file.isDirectory()){	//判断文件目录是否存在
+			file.mkdirs();
+        }
 		FileOutputStream out;
 	    try {
 	    	out = new FileOutputStream(file);
@@ -81,5 +84,37 @@ public class CommonFileManager {
             	fos.close();  
             }  
         }  
+    }
+	
+	public static byte[] objectToByteArray (Object obj) {      
+        byte[] bytes = null;      
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();      
+        try {        
+            ObjectOutputStream oos = new ObjectOutputStream(bos);         
+            oos.writeObject(obj);        
+            oos.flush();         
+            bytes = bos.toByteArray ();      
+            oos.close();         
+            bos.close();        
+        } catch (IOException ex) {        
+            ex.printStackTrace();   
+        }      
+        return bytes;    
+    }
+	
+	public static Object bytesToObject (byte[] bytes) {      
+        Object obj = null;      
+        try {        
+            ByteArrayInputStream bis = new ByteArrayInputStream (bytes);        
+            ObjectInputStream ois = new ObjectInputStream (bis);        
+            obj = ois.readObject();      
+            ois.close();   
+            bis.close();   
+        } catch (IOException ex) {        
+            ex.printStackTrace();   
+        } catch (ClassNotFoundException ex) {        
+            ex.printStackTrace();   
+        }      
+        return obj;    
     }
 }

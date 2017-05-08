@@ -17,7 +17,7 @@ public class DES {
 	private static final String keyOriginalPath = "/Users/chencaixia/SecretCloud/key/原始密钥串.txt";
 	
 	public static void main (String args[]) throws Exception {
-		byte[] key = generateDefaultKeyToPath(UserInfo.DESkeyPath);
+		byte[] key = generateDefaultKeyToPath(UserInfo.getInstance().DESkeyPath);
 		//获取指定路径的明文
 		byte[] file = CommonFileManager.getBytesFromFilepath(path);
 		//将明文加密得到密文比特

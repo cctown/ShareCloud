@@ -12,7 +12,7 @@ import UI.FileTable.FileTableModel;
 
 @SuppressWarnings("serial")
 public class ReceiveShare extends JPanel{
-	ReceiveShare(String name) {
+	ReceiveShare() {
 		setLayout(new BorderLayout(10, 0));
 		
 		//titleP

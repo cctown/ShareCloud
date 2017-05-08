@@ -14,28 +14,31 @@ import UserDefault.UserInfo;
 @SuppressWarnings("serial")
 
 public class MainWindow extends JFrame implements Observer {
-	public static String loginUserName;
 	private JPanel p;
 	private homeP home;
 	private categoryP cp;
 	private String cardName[] = {"home", "category"};
 	private CardLayout card = new CardLayout();
-	MainWindow(String userName) throws Exception {
-		loginUserName = userName;
-		setTitle("密云 - " + userName);
+	
+	MainWindow() throws Exception {
 		setSize(GlobalDef.bigWindowWidth, GlobalDef.bigWindowHeight);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		home = new homeP(userName);
-		cp = new categoryP(userName);
+		home = new homeP();
+		cp = new categoryP();
 		p = new JPanel(card);
 		p.add(cardName[0], home);
 		p.add(cardName[1], cp);
 		add(p);
 		
 		observeEvent.getInstance().addObserver(cp);
+	}
+	
+	public void resetTitle() {
+		String loginUserName = UserInfo.getInstance().userName;
+		setTitle("密云 - " + loginUserName);
 	}
 	
 	@Override
@@ -64,7 +67,8 @@ public class MainWindow extends JFrame implements Observer {
 		    	card.show(p, cardName[1]);
 		    	cp.changeToPage(GlobalDef.set);
 		    }
-			if (arg == EventDef.loginSuccess) {
+			if (arg == EventDef.readyToMainWindow) {
+				resetTitle();
 				setVisible(true);
 		    }
 			else if (arg == EventDef.exitTap) {

@@ -36,4 +36,6 @@ public class GlobalDef {
 	public static final String toolImage_2 = "images/小工具箱2.png";
 	public static final String setImage_2 = "images/小设置2.png";
 	public static final String lineImage = "images/线段.png";
+	
+	public static final String paramsPath = "/Users/chencaixia/SecretCloud/Client/params/";
 }

@@ -67,13 +67,13 @@ public class encryptionTest {
 	}
 	
 	private void getskpk() throws Exception {
-		byte[] skAbyte = (byte[])CommonFileManager.readObjectFromFile(UserInfo.keyPath + CommonDef.secretKeyAffix(IDA));
-		byte[] skBbyte = (byte[])CommonFileManager.readObjectFromFile(UserInfo.keyPath + CommonDef.secretKeyAffix(IDB));
+		byte[] skAbyte = (byte[])CommonFileManager.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.secretKeyAffix(IDA));
+		byte[] skBbyte = (byte[])CommonFileManager.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.secretKeyAffix(IDB));
 		skA = module.newG1ElementFromBytes(skAbyte).getImmutable();
 		skB = module.newG1ElementFromBytes(skBbyte).getImmutable();
 		
-		pkA = (PublicKey)CommonFileManager.readObjectFromFile(UserInfo.keyPath + CommonDef.publicKeyAffix(IDA));
-		pkB = (PublicKey)CommonFileManager.readObjectFromFile(UserInfo.keyPath + CommonDef.publicKeyAffix(IDB));
+		pkA = (PublicKey)CommonFileManager.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.publicKeyAffix(IDA));
+		pkB = (PublicKey)CommonFileManager.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.publicKeyAffix(IDB));
 	}
 	
 	//代理重加密

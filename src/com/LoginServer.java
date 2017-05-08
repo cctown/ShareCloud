@@ -18,7 +18,7 @@ import Event.observeEvent;
 import encryption.SHA512;
 
 public class LoginServer {
-	
+
 	public static void signup(String name, char[] password) {
 		String passwordString = SHA512.SHAStringToString(String.valueOf(password));
 		HttpClient httpClient = HttpClientUtil.createDefaultHttpClient();
@@ -34,13 +34,12 @@ public class LoginServer {
 		try {
 			httpClient.executeMethod(post);
 			byte[] responseBody = post.getResponseBody();
-			String s = new String(responseBody,"UTF-8");
+			String s = new String(responseBody, "UTF-8");
 			JSONObject obj = JSONObject.parseObject(s);
 			String error_no = obj.getString("error_no");
-			if(error_no.equals("0")) {    //注册成功
+			if (error_no.equals("0")) { // 注册成功
 				observeEvent.getInstance().setEventTag(EventDef.signupSuccess);
-			}
-			else {
+			} else {
 				String error_info = obj.getString("error_info");
 				JOptionPane.showMessageDialog(null, error_info, "提醒", JOptionPane.DEFAULT_OPTION);
 			}
@@ -48,11 +47,11 @@ public class LoginServer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, e.getMessage(), "服务器错误", JOptionPane.ERROR_MESSAGE);
-		}finally { 
-			post.releaseConnection(); 
+		} finally {
+			post.releaseConnection();
 		}
 	}
-	
+
 	public static void login(String name, char[] password) {
 		String passwordString = SHA512.SHAStringToString(String.valueOf(password));
 		HttpClient httpClient = HttpClientUtil.createDefaultHttpClient();
@@ -69,13 +68,12 @@ public class LoginServer {
 		try {
 			httpClient.executeMethod(post);
 			byte[] responseBody = post.getResponseBody();
-			String s = new String(responseBody,"UTF-8");
+			String s = new String(responseBody, "UTF-8");
 			JSONObject obj = JSONObject.parseObject(s);
 			String error_no = obj.getString("error_no");
-			if(error_no.equals("0")) {    //登录成功
+			if (error_no.equals("0")) { // 登录成功
 				observeEvent.getInstance().setEventTag(EventDef.loginSuccess);
-			}
-			else {
+			} else {
 				String error_info = obj.getString("error_info");
 				JOptionPane.showMessageDialog(null, error_info, "提醒", JOptionPane.DEFAULT_OPTION);
 			}
@@ -83,8 +81,8 @@ public class LoginServer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, e.getMessage(), "服务器错误", JOptionPane.ERROR_MESSAGE);
-		}finally { 
-			post.releaseConnection(); 
+		} finally {
+			post.releaseConnection();
 		}
 	}
 }

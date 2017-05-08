@@ -2,8 +2,6 @@ package UserDefault;
 
 import java.io.File;
 
-import javax.swing.JOptionPane;
-
 import com.KGCServer;
 
 import SecretCloudProxy.CommonDef;
@@ -18,10 +16,9 @@ public class UserHelper {
 	Element skA;
 	PublicKey pkA;
 	encryptionModule module;
-	String paramsPath = "/Users/chencaixia/SecretCloud/params/";
 
 	public static boolean checkUserInfo(String id) {
-		String paramsPath = UserInfo.paramsPath + CommonDef.paramsAffix;
+		String paramsPath = UserInfo.getInstance().paramsPath + CommonDef.paramsAffix;
 		File dir = new File(paramsPath);
 		if (!dir.exists()) { // 公开参数文件不存在
 			if (!KGCServer.getParams()) {
@@ -29,7 +26,7 @@ public class UserHelper {
 			}
 		}
 
-		String partKeyPath = UserInfo.paramsPath + CommonDef.partKeyAffix(id);
+		String partKeyPath = UserInfo.getInstance().paramsPath + CommonDef.partKeyAffix(id);
 		dir = new File(partKeyPath);
 		if (!dir.exists()) { // 部分私钥文件不存在
 			if (!KGCServer.getPartKey(id)) {
@@ -37,9 +34,11 @@ public class UserHelper {
 			}
 		}
 
-		String skPath = UserInfo.paramsPath + CommonDef.secretKeyAffix(id);
-		dir = new File(skPath);
-		if (!dir.exists()) { // 私钥文件不存在
+		String skPath = UserInfo.getInstance().keyPath + CommonDef.secretKeyAffix(id);
+		String pkPath = UserInfo.getInstance().keyPath + CommonDef.publicKeyAffix(id);
+		File skFile = new File(skPath);
+		File pkFile = new File(pkPath);
+		if (!skFile.exists() || !pkFile.exists()) { // 私钥或公钥文件不存在
 			encryptionModule module;
 			try {
 				module = new encryptionModule();
@@ -50,7 +49,7 @@ public class UserHelper {
 			}
 			byte[] partKey;
 			try {
-				partKey = CommonFileManager.getBytesFromFilepath(paramsPath + CommonDef.partKeyAffix(id));
+				partKey = CommonFileManager.getBytesFromFilepath(UserInfo.getInstance().paramsPath + CommonDef.partKeyAffix(id));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -59,6 +58,7 @@ public class UserHelper {
 			Element d = module.newG1ElementFromBytes(partKey).getImmutable();
 			KeyGen.skpkGen(module, id, d);
 		}
+		
 		return true;
 	}
 }

@@ -3,6 +3,7 @@ package Event;
 public class EventDef {
 	public static final String loginSuccess = "成功登录";
 	public static final String signupSuccess = "成功注册";
+	public static final String readyToMainWindow = "可以跳转主窗口了";
 	public static final String exitTap = "点击了主页的退出帐号";
 	public static final String bigCloudTap = "点击了主页的云盘";
 	public static final String bigShareTap = "点击了主页的我的分享";

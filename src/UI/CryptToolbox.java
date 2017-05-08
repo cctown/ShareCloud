@@ -39,22 +39,27 @@ public class CryptToolbox extends JPanel implements ActionListener{
 	private JRadioButton decrypt;
 	
 	private Boolean op = true;
-	private String keyTips;
-	private String fileTips;
 	private String keyPath;
 	private String filePath;
 	
-	CryptToolbox() throws Exception {
+	CryptToolbox() {
 		configureLayout();
 		
-		keyPath = UserInfo.DESkeyPath + UserInfo.defaultDESkeyName;
+		keyPath = UserInfo.getInstance().DESkeyPath + UserInfo.getInstance().defaultDESkeyName;
 		File keyfile = new File(keyPath);
+		String keyTips = "如果您不修改选择的密钥，将使用默认密钥进行加解密，默认密钥所在路径为" + keyPath;;
 		if (!keyfile.exists()) {
-			DES.generateDefaultKeyToPath(keyPath);
+			try {
+				DES.generateDefaultKeyToPath(keyPath);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				keyTips = "默认密钥丢失，请选择新的密钥。";
+			}
 		}
-		keyTips = "如果您不修改选择的密钥，将使用默认密钥进行加解密，默认密钥所在路径为" + keyPath;
-		fileTips = "请选择需要加密或解密的文件。";
-		t.setText(keyTips + "\n\n" + fileTips);
+		t.setText(keyTips);
+		String fileTips = "请选择需要加密或解密的文件。";
+		t.setText(t.getText() + "\n\n" + fileTips);
 	}
 	
 	private void configureLayout() {
@@ -192,7 +197,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 		}
 		String finallyPath;
 		try {
-			finallyPath = checkSameFileName(UserInfo.DESkeyPath + name, ".dat");
+			finallyPath = checkSameFileName(UserInfo.getInstance().DESkeyPath + name, ".dat");
 			DES.generateKeyFromBytesToPath(inputS.getBytes(), finallyPath);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -229,7 +234,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 		}
 		File file = new File(filePath);
 		String fullName = file.getName();
-		fileName = fullName.substring(0, fullName.lastIndexOf("."));;
+		fileName = fullName.substring(0, fullName.lastIndexOf("."));
 		fileAffix = fullName.substring(fullName.lastIndexOf("."));   //获取后缀名
 		String finallyPath;
 		if(op) { //加密
@@ -242,7 +247,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 				return;
 			}
 			try {
-				finallyPath = checkSameFileName(UserInfo.encryptPath + fileName + "_加密结果", fileAffix);
+				finallyPath = checkSameFileName(UserInfo.getInstance().encryptPath + fileName + "_加密结果", fileAffix);
 				CommonFileManager.saveBytesToFilepath(cipher, finallyPath);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -262,7 +267,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 				return;
 			}
 			try {
-				finallyPath = checkSameFileName(UserInfo.decryptPath + fileName + "_解密结果", fileAffix);
+				finallyPath = checkSameFileName(UserInfo.getInstance().decryptPath + fileName + "_解密结果", fileAffix);
 				CommonFileManager.saveBytesToFilepath(cipher, finallyPath);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block

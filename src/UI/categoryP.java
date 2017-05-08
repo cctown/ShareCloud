@@ -16,12 +16,12 @@ public class categoryP extends JPanel implements Observer {
 	private detailP detail;
 	private NavigationBar bar;
 	
-	categoryP(String userName) throws Exception {
+	categoryP() throws Exception {
 		setLayout(new BorderLayout());
 		bar = new NavigationBar();
 		add(bar, BorderLayout.WEST);
 		
-		detail = new detailP(userName);
+		detail = new detailP();
 		add(detail);
 		
 		JPanel je = new JPanel();
@@ -37,11 +37,11 @@ public class categoryP extends JPanel implements Observer {
 		SettingP set;
 		CardLayout card = new CardLayout();
 		
-		detailP(String name) throws Exception {
+		detailP() throws Exception {
 			setLayout(card);
-			cloud = new MyCloud(name);
-			share = new MyShare(name);
-			receive = new ReceiveShare(name);
+			cloud = new MyCloud();
+			share = new MyShare();
+			receive = new ReceiveShare();
 			tool = new CryptToolbox();
 			set = new SettingP();
 			
