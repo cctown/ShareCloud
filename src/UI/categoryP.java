@@ -16,7 +16,7 @@ public class categoryP extends JPanel implements Observer {
 	private detailP detail;
 	private NavigationBar bar;
 	
-	categoryP() throws Exception {
+	categoryP() {
 		setLayout(new BorderLayout());
 		bar = new NavigationBar();
 		add(bar, BorderLayout.WEST);
@@ -37,7 +37,7 @@ public class categoryP extends JPanel implements Observer {
 		SettingP set;
 		CardLayout card = new CardLayout();
 		
-		detailP() throws Exception {
+		detailP() {
 			setLayout(card);
 			cloud = new MyCloud();
 			share = new MyShare();

@@ -33,7 +33,7 @@ public class KGCServer {
 			String error_no = new String(obj.getBytes("error_no"));
 			String error_info = new String(obj.getBytes("error_info"));
 			if (error_no.equals("0")) { // 成功
-				JOptionPane.showMessageDialog(null, error_info, "提醒", JOptionPane.DEFAULT_OPTION);
+//				JOptionPane.showMessageDialog(null, error_info, "提醒", JOptionPane.DEFAULT_OPTION);
 				byte[] params = obj.getBytes("params");
 				// 保存公开参数到文件中
 				CommonFileManager.writeObjectToFile(params, UserInfo.getInstance().paramsPath + CommonDef.paramsAffix);
@@ -74,7 +74,7 @@ public class KGCServer {
 			String error_no = new String(obj.getBytes("error_no"));
 			String error_info = new String(obj.getBytes("error_info"));
 			if (error_no.equals("0")) { // 成功
-				JOptionPane.showMessageDialog(null, error_info, "提醒", JOptionPane.DEFAULT_OPTION);
+//				JOptionPane.showMessageDialog(null, error_info, "提醒", JOptionPane.DEFAULT_OPTION);
 				byte[] partKey = obj.getBytes("partKey");
 				// 保存部分私钥到文件中
 				CommonFileManager.saveBytesToFilepath(partKey, UserInfo.getInstance().paramsPath + CommonDef.partKeyAffix(name));

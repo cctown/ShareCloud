@@ -56,7 +56,13 @@ public class UserHelper {
 				return false;
 			}
 			Element d = module.newG1ElementFromBytes(partKey).getImmutable();
-			KeyGen.skpkGen(module, id, d);
+			try {
+				KeyGen.skpkGen(module, id, d);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
 		}
 		
 		return true;

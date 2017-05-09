@@ -3,15 +3,29 @@ package UI;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 
+import com.FileServer;
+
+import Event.EventDef;
+import Event.observeEvent;
 import UI.FileTable.FileTable;
 import UI.FileTable.FileTableModel;
+import UserDefault.UserInfo;
 
 @SuppressWarnings("serial")
-public class MyShare extends JPanel{
+public class MyShare extends JPanel implements ActionListener, Observer {
+	private FileTable fileTable;
+	private String[] tableHeader = {"文件名", "大小", "接收者", "发送时间"};
+	
 	MyShare() {
 		setLayout(new BorderLayout(10, 0));
 		
@@ -32,17 +46,15 @@ public class MyShare extends JPanel{
 		
 		//listP
 		JScrollPane SP = new JScrollPane();
-		FileTable tbFile = new FileTable();
-		SP.setViewportView(tbFile);
+		fileTable = new FileTable();
+		SP.setViewportView(fileTable);
         
-		String list[][] = {{"测试5", "1000", "小修", "2017-5"}, {"测试2", "1000", "小修", "2013-4"}, {"测试3", "1000", "花花", "2017-4"}, {"测试1", "2048", "小修", "2017-4"}, {"测试4", "1000", "小修", "2017-4"}};
-		String[] tableHeader = {"文件名", "大小", "接收者", "发送日期"};
-		FileTableModel model = new FileTableModel(list, tableHeader);
-        tbFile.setModel(model);
+		FileTableModel model = new FileTableModel(null, tableHeader);
+        fileTable.setModel(model);
         // 设置table 列宽
-        tbFile.getColumnModel().getColumn(0).setPreferredWidth(300);
-        tbFile.getColumnModel().getColumn(1).setPreferredWidth(150);
-        tbFile.getColumnModel().getColumn(2).setPreferredWidth(100);
+        fileTable.getColumnModel().getColumn(0).setPreferredWidth(300);
+        fileTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+        fileTable.getColumnModel().getColumn(2).setPreferredWidth(100);
 		
 		add(SP);
 	}
@@ -57,6 +69,46 @@ public class MyShare extends JPanel{
 		b.setBackground(GlobalDef.deepPurple);
 		b.setForeground(GlobalDef.loginGray);
 		return b;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		if(o instanceof observeEvent){
+		    if((arg == EventDef.getMyShareFiles)) {
+		    	reflashFileList();
+		    }
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void reflashFileList() {
+		String id = UserInfo.getInstance().userName;
+		List<Map<String, String>> fileList =  FileServer.getFileInfoForUser(id);
+		String tableInfoList[][];
+		if(fileList == null) {
+			return;
+		}
+		else {
+			int i = 0;
+			tableInfoList = new String[fileList.size()][4];
+			Map<String, String> map;
+			while(i < fileList.size()) {
+				map = fileList.get(i);
+				tableInfoList[i][0] = map.get("fileName");
+				tableInfoList[i][1] = map.get("size");
+				tableInfoList[i][2] = map.get("receiver");
+				tableInfoList[i][3] = map.get("date");
+				i++;
+			}
+		}
+		FileTableModel model = new FileTableModel(tableInfoList, tableHeader);
+        fileTable.setModel(model);
 	}
 }
 

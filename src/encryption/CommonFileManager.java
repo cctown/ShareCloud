@@ -12,24 +12,22 @@ import java.io.ObjectOutputStream;
 
 public class CommonFileManager {
 	
-	public static void writeObjectToFile(Object obj, String path) {
+	public static void writeObjectToFile(Object obj, String path) throws Exception {
 		File file =new File(path);
-		if(!file.exists() && file.isDirectory()){	//判断文件目录是否存在
-			file.mkdirs();
+		File superFile = file;
+		if(!file.isDirectory()) {   //file是一个文件，则获取它的上级目录
+			String superPath = path.substring(0, path.lastIndexOf("/"));
+			superFile = new File(superPath);
+		}
+        if(!superFile.exists()){     //判断文件夹是否存在，不存在就新建文件夹
+        	superFile.mkdirs();  
         }
 		FileOutputStream out;
-	    try {
-	    	out = new FileOutputStream(file);
-	    	ObjectOutputStream objOut=new ObjectOutputStream(out);
-	    	objOut.writeObject(obj);
-	    	objOut.flush();
-	    	objOut.close();
-	    	System.out.println("成功将对象写入路径：" + path);
-	    }
-	    catch(IOException e) {
-	    	System.out.println("写入失败");
-	    	e.printStackTrace();
-	    }
+		out = new FileOutputStream(file);
+    	ObjectOutputStream objOut=new ObjectOutputStream(out);
+    	objOut.writeObject(obj);
+    	objOut.flush();
+    	objOut.close();
 	}
 	
 	public static Object readObjectFromFile(String path) throws Exception {
@@ -64,11 +62,15 @@ public class CommonFileManager {
 	public static void saveBytesToFilepath(byte[] bfile, String filePath) throws Exception {  
         BufferedOutputStream bos = null;
         FileOutputStream fos = null;  
-        File file = null;
         try {
-            File dir = new File(filePath);  
-            if(!dir.exists() && dir.isDirectory()){//判断文件目录是否存在  
-                dir.mkdirs();  
+        	File file =new File(filePath);
+    		File superFile = file;
+    		if(!file.isDirectory()) {    //file是一个文件，则获取它的上级目录
+    			String superPath = filePath.substring(0, filePath.lastIndexOf("/"));
+    			superFile = new File(superPath);
+    		}
+            if(!superFile.exists()){     //判断文件夹是否存在，不存在就新建文件夹
+            	superFile.mkdirs();  
             }
             file = new File(filePath);  
             fos = new FileOutputStream(file);  

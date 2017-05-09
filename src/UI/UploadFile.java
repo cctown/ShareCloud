@@ -15,7 +15,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
-import com.UploadServer;
+import com.FileServer;
 
 import Event.EventDef;
 import Event.observeEvent;
@@ -159,7 +159,7 @@ public class UploadFile extends JPanel implements ActionListener {
 	private void startOperation(String id) {
 		// 检查各个配置文件，确保加密使用的密钥、公开参数等文件在
 		if (!UserHelper.checkUserInfo(id)) {
-			t.setText(t.getText() + "\n\n" + "用户信息不完整，无法加密文件上传");
+			t.setText(t.getText() + "\n\n" + "用户配置文件不完整，无法加密文件上传");
 			return;
 		}
 		String fileName;
@@ -232,8 +232,9 @@ public class UploadFile extends JPanel implements ActionListener {
 		Ciphertext tCipher = encryptTask.encryptMsg(module, condition.toBytes(), pk, condition);
 		t.setText(t.getText() + "\n" + "成功加密访问条件值");
 		t.setText(t.getText() + "\n" + "开始上传文件");
-		if(UploadServer.uploadFile(id, fileName, cipher, DEScipher, tCipher)) {
+		if(FileServer.uploadFile(id, fileName, cipher, DEScipher, tCipher)) {
 			t.setText(t.getText() + "\n" + "上传成功！");
+			observeEvent.getInstance().setEventTag(EventDef.getUserFiles);
 		}
 		else {
 			t.setText(t.getText() + "\n" + "上传失败！");

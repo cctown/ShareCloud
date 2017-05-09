@@ -10,7 +10,7 @@ import it.unisa.dia.gas.jpbc.Element;
 
 public class KeyGen {
 	//生成公私钥对
-	public static void skpkGen(encryptionModule module, String ID, Element dA) {
+	public static void skpkGen(encryptionModule module, String ID, Element dA) throws Exception {
 		//随机选择一个整数xA ∈ Z∗p
 		Element xA = module.newGTRandomElement().getImmutable();
 		//私钥 skA = gA^s^xA

@@ -18,4 +18,7 @@ public class EventDef {
 	public static final String setTap = "点击了导航的设置图标";
 	
 	public static final String backToCloud = "返回我的云盘";
+	public static final String getUserFiles = "获取用户云盘文件";
+	public static final String getMyShareFiles = "获取用户已分享的文件";
+	public static final String getReceiveShareFiles = "获取用户收到的分享文件";
 }

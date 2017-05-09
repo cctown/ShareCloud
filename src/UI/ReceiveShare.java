@@ -12,6 +12,9 @@ import UI.FileTable.FileTableModel;
 
 @SuppressWarnings("serial")
 public class ReceiveShare extends JPanel{
+	FileTable fileTable;
+	String[] tableHeader = {"文件名", "大小", "发送者", "发送时间"};
+	
 	ReceiveShare() {
 		setLayout(new BorderLayout(10, 0));
 		
@@ -34,17 +37,15 @@ public class ReceiveShare extends JPanel{
 		
 		//listP
 		JScrollPane SP = new JScrollPane();
-		FileTable tbFile = new FileTable();
-		SP.setViewportView(tbFile);
+		fileTable = new FileTable();
+		SP.setViewportView(fileTable);
         
-		String list[][] = {{"测试5", "1000", "小修", "2017-5"}, {"测试2", "1000", "小修", "2013-4"}, {"测试3", "1000", "花花", "2017-4"}, {"测试1", "2048", "小修", "2017-4"}, {"测试4", "1000", "小修", "2017-4"}};
-		String[] tableHeader = {"文件名", "大小", "发送者", "发送日期"};
-		FileTableModel model = new FileTableModel(list, tableHeader);
-        tbFile.setModel(model);
+		FileTableModel model = new FileTableModel(null, tableHeader);
+		fileTable.setModel(model);
         // 设置table 列宽
-        tbFile.getColumnModel().getColumn(0).setPreferredWidth(300);
-        tbFile.getColumnModel().getColumn(1).setPreferredWidth(150);
-        tbFile.getColumnModel().getColumn(2).setPreferredWidth(100);
+		fileTable.getColumnModel().getColumn(0).setPreferredWidth(300);
+		fileTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+		fileTable.getColumnModel().getColumn(2).setPreferredWidth(100);
 		
 		add(SP);
 	}

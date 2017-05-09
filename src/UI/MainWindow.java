@@ -20,7 +20,7 @@ public class MainWindow extends JFrame implements Observer {
 	private String cardName[] = {"home", "category"};
 	private CardLayout card = new CardLayout();
 	
-	MainWindow() throws Exception {
+	MainWindow() {
 		setSize(GlobalDef.bigWindowWidth, GlobalDef.bigWindowHeight);
 		setLocationRelativeTo(null);
 		setResizable(false);
