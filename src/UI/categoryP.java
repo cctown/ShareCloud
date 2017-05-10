@@ -15,28 +15,28 @@ import Event.observeEvent;
 public class categoryP extends JPanel implements Observer {
 	private detailP detail;
 	private NavigationBar bar;
-	
+	private MyCloud cloud;
+	private MyShare share;
+	private ReceiveShare receive;
+	private CryptToolbox tool;
+	private SettingP set;
+
 	categoryP() {
 		setLayout(new BorderLayout());
 		bar = new NavigationBar();
 		add(bar, BorderLayout.WEST);
-		
+
 		detail = new detailP();
 		add(detail);
-		
+
 		JPanel je = new JPanel();
 		add(je, BorderLayout.EAST);
 	}
-	
+
 	private class detailP extends JPanel {
-		String cardName[] = {"cloud", "share", "receive", "tool", "set"};
-		MyCloud cloud;
-		MyShare share;
-		ReceiveShare receive;
-		CryptToolbox tool;
-		SettingP set;
+		String cardName[] = { "cloud", "share", "receive", "tool", "set" };
 		CardLayout card = new CardLayout();
-		
+
 		detailP() {
 			setLayout(card);
 			cloud = new MyCloud();
@@ -44,55 +44,51 @@ public class categoryP extends JPanel implements Observer {
 			receive = new ReceiveShare();
 			tool = new CryptToolbox();
 			set = new SettingP();
-			
+
 			add(cardName[0], cloud);
 			add(cardName[1], share);
 			add(cardName[2], receive);
 			add(cardName[3], tool);
 			add(cardName[4], set);
-			
+
 			observeEvent.getInstance().addObserver(cloud);
 		}
 	}
-	
+
 	@Override
 	public void update(Observable o, Object arg) {
-		if(o instanceof observeEvent){
-		    if (arg == EventDef.cloudTap) {
-		    	detail.card.show(detail, detail.cardName[0]);
-		    	detail.cloud.pageToCloud();
-		    }
-		    else if (arg == EventDef.shareTap) {
-		    	detail.card.show(detail, detail.cardName[1]);
-		    }
-		    else if (arg == EventDef.receiveTap) {
-		    	detail.card.show(detail, detail.cardName[2]);
-		    }
-		    else if (arg == EventDef.toolTap) {
-		    	detail.card.show(detail, detail.cardName[3]);
-		    }
-		    else if (arg == EventDef.setTap) {
-		    	detail.card.show(detail, detail.cardName[4]);
-		    }
+		if (o instanceof observeEvent) {
+			if (arg == EventDef.cloudTap) {
+				detail.card.show(detail, detail.cardName[0]);
+				cloud.pageToCloud();
+			} else if (arg == EventDef.shareTap) {
+				detail.card.show(detail, detail.cardName[1]);
+			} else if (arg == EventDef.receiveTap) {
+				detail.card.show(detail, detail.cardName[2]);
+			} else if (arg == EventDef.toolTap) {
+				detail.card.show(detail, detail.cardName[3]);
+			} else if (arg == EventDef.setTap) {
+				detail.card.show(detail, detail.cardName[4]);
+			} else if (arg == EventDef.readyToMainWindow) {
+				cloud.reflashFileList();
+				share.reflashFileList();
+				receive.reflashFileList();
+			}
 		}
 	}
-	
+
 	public void changeToPage(String p) {
 		bar.changeToPage(p);
 		if (p == GlobalDef.cloud) {
 			detail.card.show(detail, detail.cardName[0]);
-			detail.cloud.pageToCloud();
-		}
-		else if (p == GlobalDef.share) {
+			cloud.pageToCloud();
+		} else if (p == GlobalDef.share) {
 			detail.card.show(detail, detail.cardName[1]);
-		}
-		else if (p == GlobalDef.receive) {
+		} else if (p == GlobalDef.receive) {
 			detail.card.show(detail, detail.cardName[2]);
-		}
-		else if (p == GlobalDef.tool) {
+		} else if (p == GlobalDef.tool) {
 			detail.card.show(detail, detail.cardName[3]);
-		}
-		else if (p == GlobalDef.set) {
+		} else if (p == GlobalDef.set) {
 			detail.card.show(detail, detail.cardName[4]);
 		}
 	}

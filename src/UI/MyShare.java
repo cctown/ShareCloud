@@ -11,6 +11,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 
 import com.FileServer;
@@ -22,9 +23,11 @@ import UI.FileTable.FileTableModel;
 import UserDefault.UserInfo;
 
 @SuppressWarnings("serial")
-public class MyShare extends JPanel implements ActionListener, Observer {
+public class MyShare extends JPanel implements ActionListener {
 	private FileTable fileTable;
 	private String[] tableHeader = {"文件名", "大小", "接收者", "发送时间"};
+	private JButton deleteB;
+	private JButton reflashB;
 	
 	MyShare() {
 		setLayout(new BorderLayout(10, 0));
@@ -33,8 +36,12 @@ public class MyShare extends JPanel implements ActionListener, Observer {
 		JPanel titleP = new JPanel(new BorderLayout(10, 10));
 		
 		JPanel buttonP = new JPanel(new GridLayout(1,2,1,0));
-		JButton deleteB = NomalButton("取消分享");
+		deleteB = NomalButton("取消分享");
+		deleteB.addActionListener(this);
+		reflashB = NomalButton("刷新");
+		reflashB.addActionListener(this);
 		buttonP.add(deleteB);
+		buttonP.add(reflashB);
 		
 		titleP.add(buttonP, BorderLayout.EAST);
 		JPanel jc = new JPanel();
@@ -72,24 +79,24 @@ public class MyShare extends JPanel implements ActionListener, Observer {
 	}
 
 	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		if(o instanceof observeEvent){
-		    if((arg == EventDef.getMyShareFiles)) {
-		    	reflashFileList();
-		    }
-		}
-	}
-
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		
+		Object o = e.getSource();
+		if (o == deleteB) {
+			int selectedRow = fileTable.getSelectedRow();
+			if(selectedRow == -1) {   //-1表示没有选中行
+				JOptionPane.showMessageDialog(null, "请先选择文件", "提醒", JOptionPane.DEFAULT_OPTION);
+				return;
+			}
+		}
+		else if (o == reflashB) {
+			reflashFileList();
+		}
 	}
 	
-	private void reflashFileList() {
+	public void reflashFileList() {
 		String id = UserInfo.getInstance().userName;
-		List<Map<String, String>> fileList =  FileServer.getFileInfoForUser(id);
+		List<Map<String, String>> fileList =  FileServer.getSharedFileForUser(id);
 		String tableInfoList[][];
 		if(fileList == null) {
 			return;

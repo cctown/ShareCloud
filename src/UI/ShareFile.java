@@ -24,9 +24,17 @@ import com.FileServer;
 import Event.EventDef;
 import Event.observeEvent;
 import SecretCloudProxy.Ciphertext;
+import SecretCloudProxy.CommonDef;
+import SecretCloudProxy.PublicKey;
+import SecretCloudProxy.ReencryptionKey;
 import UserDefault.UserHelper;
 import UserDefault.UserInfo;
 import encryption.CommonFileManager;
+import encryption.KeyGen;
+import encryption.decryptTask;
+import encryption.encryptionModule;
+
+import it.unisa.dia.gas.jpbc.Element;
 
 @SuppressWarnings("serial")
 public class ShareFile extends JPanel implements ActionListener {
@@ -142,7 +150,9 @@ public class ShareFile extends JPanel implements ActionListener {
 		} else if (o == comfirmB) {
 			handleComfirm();
 		} else if (o == startB) {
-			handleStartShare();
+			if(idArray != null && !idArray.isEmpty()) {
+				handleStartShare();
+			}
 		}
 	}
 
@@ -152,6 +162,10 @@ public class ShareFile extends JPanel implements ActionListener {
 		name = idTextField.getText();
 		if (name == null || name.length() == 0) {
 			JOptionPane.showMessageDialog(null, "请填写用户名", "提醒", JOptionPane.DEFAULT_OPTION);
+			return;
+		}
+		if (name.equals(UserInfo.getInstance().userName)) {
+			JOptionPane.showMessageDialog(null, "不需要给自己分享文件", "提醒", JOptionPane.DEFAULT_OPTION);
 			return;
 		}
 		if (idArray != null) {
@@ -176,10 +190,83 @@ public class ShareFile extends JPanel implements ActionListener {
 			nameTextArea.setText(nameTextArea.getText() + "\n\n" + "用户配置文件不完整，无法完成操作");
 			return;
 		}
+		
+		encryptionModule module;
+		try {
+			module = new encryptionModule();
+			nameTextArea.setText(nameTextArea.getText() + "\n\n" + "成功初始化加密模块");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			nameTextArea.setText(nameTextArea.getText() + "\n\n" + "加密模块初始化失败，无法完成操作。");
+			return;
+		}
+		
+		Element sk;
+		try {
+			byte[] skbyte = (byte[])CommonFileManager.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.secretKeyAffix(userName));
+			sk = module.newG1ElementFromBytes(skbyte).getImmutable();
+			nameTextArea.setText(nameTextArea.getText() + "\n" + "成功获取用户私钥");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			nameTextArea.setText(nameTextArea.getText() + "\n" + "获取用户私钥失败，无法完成操作。");
+			return;
+		}
+		nameTextArea.setText(nameTextArea.getText() + "\n" + "正在向服务器请求条件值和参数...");
 		Map<String, byte[]> map = FileServer.getParamsForReencryptionKey(userName, fileName);
-		byte[] grt = map.get("grt");
-		Ciphertext condition = (Ciphertext)CommonFileManager.bytesToObject(map.get("condition"));
-		System.out.println();
+		if(map == null) {
+			nameTextArea.setText(nameTextArea.getText() + "\n" + "向服务器请求条件值和参数失败，无法完成操作。");
+			return;
+		}
+		byte[] grtByte = map.get("grt");
+		Ciphertext conditionCipher = (Ciphertext)CommonFileManager.bytesToObject(map.get("condition"));
+		byte[] conditionByte = decryptTask.decryptMsg(module, conditionCipher, sk);
+		//终于拿到条件值和grt -_-
+		Element condition = module.newGTElementFromBytes(conditionByte);
+		Element grt = module.newG1ElementFromBytes(grtByte);
+		nameTextArea.setText(nameTextArea.getText() + "\n" + "成功拿到条件值和参数。");
+		
+		Map<String, byte[]> rkMap = new HashMap<String, byte[]>();
+		int j = 0;
+		while(j < idArray.size()) {    //一个个为接收者生成重加密密钥
+			String reveiverID = idArray.get(j);
+			PublicKey pk;
+			try {
+				pk = (PublicKey) CommonFileManager.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.publicKeyAffix(reveiverID));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				nameTextArea.setText(nameTextArea.getText() + "\n" + "找不到" + reveiverID +"的公钥，无法分享，请确认该用户是否存在。");
+				idArray.remove(j);
+				continue;   //由于remove了一个，所以idArray的长度会减一，这时候 j 就不需要加1了，正好能访问到下一个对象
+			}
+			nameTextArea.setText(nameTextArea.getText() + "\n" + "正在为" + reveiverID +"生成重加密密钥...");
+			ReencryptionKey rk = KeyGen.rkGen(module, sk, pk, grt, condition);
+			nameTextArea.setText(nameTextArea.getText() + "\n" + "成功为" + reveiverID +"生成重加密密钥。");
+			String rkName = CommonDef.reencryptionKeyAffix(userName, reveiverID, fileName);
+			rkMap.put(rkName, CommonFileManager.objectToByteArray(rk));
+			
+			j++;
+		}
+		if(rkMap.isEmpty()) {
+			nameTextArea.setText(nameTextArea.getText() + "\n" + "操作结束。");
+			return;
+		}
+		String[] receivers = new String[idArray.size()];
+		try{
+			for(int i = 0; i < idArray.size(); i++) {
+				receivers[i] = idArray.get(i);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			nameTextArea.setText(nameTextArea.getText() + "\n" + "失败");
+		}
+		//提交重加密密钥
+		String res = FileServer.uploadReencryptionKey(userName, fileName, receivers, rkMap);
+		if(res != null) {
+			nameTextArea.setText(nameTextArea.getText() + "\n" + res);
+		}
 	}
 
 	public void setFile(String fileName) {
@@ -187,5 +274,6 @@ public class ShareFile extends JPanel implements ActionListener {
 		this.fileL.setText("将要分享的文件为：" + fileName);
 		nameTextArea.setText(defaultTips);
 		idTextField.setText("");
+		idArray.clear();
 	}
 }

@@ -100,12 +100,12 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 	        fileTable.getColumnModel().getColumn(0).setPreferredWidth(300);
 	        fileTable.getColumnModel().getColumn(1).setPreferredWidth(150);
 	        fileTable.getColumnModel().getColumn(2).setPreferredWidth(100);
-	        ListSelectionModel selectionModel = fileTable.getSelectionModel();
-	        selectionModel.addListSelectionListener(new ListSelectionListener() {
-	        	public void valueChanged(ListSelectionEvent e) {
-		            //事件处理代码
-		          }
-	        });
+//	        ListSelectionModel selectionModel = fileTable.getSelectionModel();
+//	        selectionModel.addListSelectionListener(new ListSelectionListener() {
+//	        	public void valueChanged(ListSelectionEvent e) {
+//		            //事件处理代码
+//		          }
+//	        });
 			add(SP);
 		}
 	}
@@ -181,7 +181,7 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 		}
 	}
 	
-	private void reflashFileList() {
+	public void reflashFileList() {
 		String id = UserInfo.getInstance().userName;
 		List<Map<String, String>> fileList =  FileServer.getFileInfoForUser(id);
 		String tableInfoList[][];

@@ -16,6 +16,9 @@ public class CommonDef {
 	}
 	
 	public static String reencryptionKeyAffix(String ownerID, String receiverID, String fileName) {
+		fileName = fileName.replace(".", "");
 		return ownerID + "-" +receiverID + "-" + fileName + "_rk.dat";
 	}
+	
+	public final String pkPath = "/Users/chencaixia/SecretCloud/Client/key/";
 }
