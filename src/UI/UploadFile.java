@@ -88,7 +88,7 @@ public class UploadFile extends JPanel implements ActionListener {
 
 		JScrollPane sp = new JScrollPane();
 		t = new JTextArea();
-		
+
 		t.setEditable(false);
 		t.setMargin(new Insets(5, 5, 100, 5));
 		t.setLineWrap(true); // 自动换行
@@ -189,7 +189,6 @@ public class UploadFile extends JPanel implements ActionListener {
 			return;
 		}
 
-		// 加密DES密钥，用于代理重加密分享
 		encryptionModule module;
 		try {
 			module = new encryptionModule();
@@ -202,7 +201,8 @@ public class UploadFile extends JPanel implements ActionListener {
 		}
 		PublicKey pk;
 		try {
-			pk = (PublicKey) CommonFileManager.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.publicKeyAffix(id));
+			pk = (PublicKey) CommonFileManager
+					.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.publicKeyAffix(id));
 			t.setText(t.getText() + "\n" + "成功获取用户公钥");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -210,7 +210,7 @@ public class UploadFile extends JPanel implements ActionListener {
 			t.setText(t.getText() + "\n\n" + "公钥文件丢失，无法加密文件上传。");
 			return;
 		}
-		
+
 		// 加密源文件
 		t.setText(t.getText() + "\n" + "开始加密源文件");
 		try {
@@ -222,9 +222,10 @@ public class UploadFile extends JPanel implements ActionListener {
 			t.setText(t.getText() + "\n\n" + "加密源文件失败，详细信息如下：" + e.getMessage());
 			return;
 		}
-		
+
 		Element condition = module.newGTRandomElement().getImmutable();
 		t.setText(t.getText() + "\n" + "开始加密密钥");
+		// 加密DES密钥，用于代理重加密分享
 		ShareCipher DEScipher = shareCipherTask.encryptShareMsg(module, keyBytes, pk, condition);
 		t.setText(t.getText() + "\n" + "成功加密密钥");
 		// 加密条件值t
@@ -232,11 +233,10 @@ public class UploadFile extends JPanel implements ActionListener {
 		Ciphertext tCipher = encryptTask.encryptMsg(module, condition.toBytes(), pk, condition);
 		t.setText(t.getText() + "\n" + "成功加密访问条件值");
 		t.setText(t.getText() + "\n" + "开始上传文件");
-		if(FileServer.uploadFile(id, fileName, cipher, DEScipher, tCipher)) {
+		if (FileServer.uploadFile(id, fileName, cipher, DEScipher, tCipher)) {
 			t.setText(t.getText() + "\n" + "上传成功！");
 			observeEvent.getInstance().setEventTag(EventDef.getUserFiles);
-		}
-		else {
+		} else {
 			t.setText(t.getText() + "\n" + "上传失败！");
 		}
 	}

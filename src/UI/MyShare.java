@@ -7,8 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -16,8 +14,6 @@ import javax.swing.JScrollPane;
 
 import com.FileServer;
 
-import Event.EventDef;
-import Event.observeEvent;
 import UI.FileTable.FileTable;
 import UI.FileTable.FileTableModel;
 import UserDefault.UserInfo;

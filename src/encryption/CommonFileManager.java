@@ -12,7 +12,7 @@ import java.io.ObjectOutputStream;
 
 public class CommonFileManager {
 	
-	public static void writeObjectToFile(Object obj, String path) throws Exception {
+	public static File writeObjectToFile(Object obj, String path) throws Exception {
 		File file =new File(path);
 		File superFile = file;
 		if(!file.isDirectory()) {   //file是一个文件，则获取它的上级目录
@@ -28,6 +28,7 @@ public class CommonFileManager {
     	objOut.writeObject(obj);
     	objOut.flush();
     	objOut.close();
+    	return file;
 	}
 	
 	public static Object readObjectFromFile(String path) throws Exception {
@@ -59,11 +60,12 @@ public class CommonFileManager {
 		return buffer;
 	}
 	
-	public static void saveBytesToFilepath(byte[] bfile, String filePath) throws Exception {  
+	public static File saveBytesToFilepath(byte[] bfile, String filePath) throws Exception {  
         BufferedOutputStream bos = null;
-        FileOutputStream fos = null;  
+        FileOutputStream fos = null; 
+        File file;
         try {
-        	File file =new File(filePath);
+        	file =new File(filePath);
     		File superFile = file;
     		if(!file.isDirectory()) {    //file是一个文件，则获取它的上级目录
     			String superPath = filePath.substring(0, filePath.lastIndexOf("/"));
@@ -85,7 +87,8 @@ public class CommonFileManager {
             if (fos != null) {  
             	fos.close();  
             }  
-        }  
+        }
+        return file;
     }
 	
 	public static byte[] objectToByteArray (Object obj) {      

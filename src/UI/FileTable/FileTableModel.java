@@ -1,7 +1,5 @@
 package UI.FileTable;
 
-import java.io.File;
-
 import javax.swing.table.DefaultTableModel;
 
 @SuppressWarnings("serial")

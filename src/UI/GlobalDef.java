@@ -38,4 +38,5 @@ public class GlobalDef {
 	public static final String lineImage = "images/线段.png";
 	
 	public static final String paramsPath = "/Users/chencaixia/SecretCloud/Client/params/";
+	public static final String tempPath = "/Users/chencaixia/SecretCloud/Client/temp/";
 }

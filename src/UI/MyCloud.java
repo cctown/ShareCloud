@@ -14,9 +14,6 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import com.FileServer;
 
@@ -33,45 +30,45 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 	private cloud cloud;
 	private UploadFile up;
 	private ShareFile share;
-	private String cardName[] = {"cloud", "up", "share"};
+	private String cardName[] = { "cloud", "up", "share" };
 	private FileTable fileTable;
-	private String[] tableHeader = {"文件名", "修改时间", "大小"};
+	private String[] tableHeader = { "文件名", "修改时间", "大小" };
 	private JButton upB;
 	private JButton downB;
 	private JButton shareB;
 	private JButton deleteB;
-	
+
 	MyCloud() {
 		configureLayout();
 	}
-	
+
 	private void configureLayout() {
 		setLayout(new BorderLayout());
 		j = new JPanel();
 		j.setLayout(card);
-		
+
 		cloud = new cloud();
 		up = new UploadFile();
 		share = new ShareFile();
 		j.add(cardName[0], cloud);
 		j.add(cardName[1], up);
 		j.add(cardName[2], share);
-		
+
 		upB.addActionListener(this);
 		downB.addActionListener(this);
 		shareB.addActionListener(this);
 		deleteB.addActionListener(this);
-		
+
 		add(j);
 	}
-	
+
 	private class cloud extends JPanel {
 		cloud() {
 			setLayout(new BorderLayout(10, 0));
-			
-			//titleP
+
+			// titleP
 			JPanel titleP = new JPanel(new BorderLayout(10, 10));
-			JPanel buttonP = new JPanel(new GridLayout(1,4,1,0));
+			JPanel buttonP = new JPanel(new GridLayout(1, 4, 1, 0));
 			upB = NomalButton("上传文件");
 			downB = NomalButton("下载");
 			shareB = NomalButton("分享");
@@ -80,36 +77,30 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 			buttonP.add(downB);
 			buttonP.add(shareB);
 			buttonP.add(deleteB);
-			
+
 			titleP.add(buttonP, BorderLayout.EAST);
 			JPanel jc = new JPanel();
 			titleP.add(jc, BorderLayout.NORTH);
 			JPanel jd = new JPanel();
 			titleP.add(jd, BorderLayout.SOUTH);
-			
+
 			add(titleP, BorderLayout.NORTH);
-			
-			//listP
+
+			// listP
 			JScrollPane SP = new JScrollPane();
 			fileTable = new FileTable();
 			SP.setViewportView(fileTable);
-	        
+
 			FileTableModel model = new FileTableModel(null, tableHeader);
-	        fileTable.setModel(model);
-	        // 设置table 列宽
-	        fileTable.getColumnModel().getColumn(0).setPreferredWidth(300);
-	        fileTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-	        fileTable.getColumnModel().getColumn(2).setPreferredWidth(100);
-//	        ListSelectionModel selectionModel = fileTable.getSelectionModel();
-//	        selectionModel.addListSelectionListener(new ListSelectionListener() {
-//	        	public void valueChanged(ListSelectionEvent e) {
-//		            //事件处理代码
-//		          }
-//	        });
+			fileTable.setModel(model);
+			// 设置table 列宽
+			fileTable.getColumnModel().getColumn(0).setPreferredWidth(300);
+			fileTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+			fileTable.getColumnModel().getColumn(2).setPreferredWidth(100);
 			add(SP);
 		}
 	}
-	
+
 	private JButton NomalButton(String title) {
 		JButton b = new JButton();
 		b.setText(title);
@@ -121,7 +112,7 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 		b.setForeground(GlobalDef.loginGray);
 		return b;
 	}
-	
+
 	public void pageToCloud() {
 		card.show(j, cardName[0]);
 	}
@@ -131,40 +122,37 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 		Object o = e.getSource();
 		if (o == upB) {
 			card.show(j, cardName[1]);
-		}
-		else if (o == downB) {
+		} else if (o == downB) {
 			handleDownload();
-		}
-		else if (o == shareB) {
+		} else if (o == shareB) {
 			handleShare();
-		}
-		else if (o == deleteB) {
+		} else if (o == deleteB) {
 			handleDelete();
 		}
 	}
 
 	@Override
 	public void update(Observable o, Object arg) {
-		if(o instanceof observeEvent){
-		    if (arg == EventDef.backToCloud) {
-		    	card.show(j, cardName[0]);
-		    } else if((arg == EventDef.getUserFiles)) {
-		    	reflashFileList();
-		    }
+		if (o instanceof observeEvent) {
+			if (arg == EventDef.backToCloud) {
+				card.show(j, cardName[0]);
+			} else if ((arg == EventDef.getUserFiles)) {
+				reflashFileList();
+			}
 		}
 	}
-	
+
 	private void handleDownload() {
 		int selectedRow = fileTable.getSelectedRow();
-		if(selectedRow == -1) {   //-1表示没有选中行
+		if (selectedRow == -1) { // -1表示没有选中行
 			JOptionPane.showMessageDialog(null, "请先选择文件", "提醒", JOptionPane.DEFAULT_OPTION);
 			return;
 		}
 	}
-	
+
 	private void handleShare() {
 		int selectedRow = fileTable.getSelectedRow();
-		if(selectedRow == -1) {   //-1表示没有选中行
+		if (selectedRow == -1) { // -1表示没有选中行
 			JOptionPane.showMessageDialog(null, "请先选择文件", "提醒", JOptionPane.DEFAULT_OPTION);
 			return;
 		}
@@ -172,27 +160,26 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 		share.setFile(fileName);
 		card.show(j, cardName[2]);
 	}
-	
+
 	private void handleDelete() {
 		int selectedRow = fileTable.getSelectedRow();
-		if(selectedRow == -1) {   //-1表示没有选中行
+		if (selectedRow == -1) { // -1表示没有选中行
 			JOptionPane.showMessageDialog(null, "请先选择文件", "提醒", JOptionPane.DEFAULT_OPTION);
 			return;
 		}
 	}
-	
+
 	public void reflashFileList() {
 		String id = UserInfo.getInstance().userName;
-		List<Map<String, String>> fileList =  FileServer.getFileInfoForUser(id);
+		List<Map<String, String>> fileList = FileServer.getFileInfoForUser(id);
 		String tableInfoList[][];
-		if(fileList == null) {
+		if (fileList == null) {
 			return;
-		}
-		else {
+		} else {
 			int i = 0;
 			tableInfoList = new String[fileList.size()][3];
 			Map<String, String> map;
-			while(i < fileList.size()) {
+			while (i < fileList.size()) {
 				map = fileList.get(i);
 				tableInfoList[i][0] = map.get("fileName");
 				tableInfoList[i][1] = map.get("date");
@@ -201,6 +188,6 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 			}
 		}
 		FileTableModel model = new FileTableModel(tableInfoList, tableHeader);
-        fileTable.setModel(model);
+		fileTable.setModel(model);
 	}
 }

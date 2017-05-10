@@ -4,7 +4,6 @@ import SecretCloudProxy.Ciphertext;
 import SecretCloudProxy.CommonDef;
 import SecretCloudProxy.PublicKey;
 import SecretCloudProxy.ReencryptionKey;
-import UI.SettingP;
 import UserDefault.UserInfo;
 import it.unisa.dia.gas.jpbc.Element;
 

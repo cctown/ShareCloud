@@ -14,7 +14,6 @@ public class DES {
 	private static final String path = "/Users/chencaixia/SecretCloud/download/原文.txt";
 	private static final String encryptPath = "/Users/chencaixia/SecretCloud/encrypt/加密结果.txt";
 	private static final String decryptPath = "/Users/chencaixia/SecretCloud/decrypt/解密结果.txt";
-	private static final String keyOriginalPath = "/Users/chencaixia/SecretCloud/key/原始密钥串.txt";
 	
 	public static void main (String args[]) throws Exception {
 		byte[] key = generateDefaultKeyToPath(UserInfo.getInstance().DESkeyPath);
