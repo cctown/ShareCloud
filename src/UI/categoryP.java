@@ -24,6 +24,7 @@ public class categoryP extends JPanel implements Observer {
 	categoryP() {
 		configureLayout();
 		observeEvent.getInstance().addObserver(cloud);
+		observeEvent.getInstance().addObserver(share);
 		observeEvent.getInstance().addObserver(tool);
 	}
 	

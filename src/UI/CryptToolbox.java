@@ -175,7 +175,7 @@ public class CryptToolbox extends JPanel implements ActionListener, Observer {
 	}
 	
 	private void defaultDESkeyInit() {
-		keyPath = UserInfo.getInstance().getDESkeyPath() + UserInfo.getInstance().defaultDESkeyName;
+		keyPath = UserInfo.getInstance().getDESkeyPath() + UserInfo.getInstance().getDefaultDESkeyName();
 		File keyfile = new File(keyPath);
 		String keyTips = "如果您不修改选择的密钥，将使用默认密钥进行加解密，默认密钥所在路径为" + keyPath;
 		if (!keyfile.exists()) {

@@ -5,7 +5,6 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -110,12 +109,22 @@ public class ReceiveShare extends JPanel implements ActionListener {
 	}
 
 	private void handleDelete() {
-		 FileServer.testDownLoad("代理重加密论文方案概述.pptx", "/Users/chencaixia/files/房子.jpg");
-//		 FileServer.testDownLoad("代理重加密论文方案概述.pptx", "/Users/chencaixia/files/代理重加密论文方案概述.pptx");
+		int selectedRow = fileTable.getSelectedRow();
+		if (selectedRow == -1) { // -1表示没有选中行
+			JOptionPane.showMessageDialog(null, "请先选择文件", "提醒", JOptionPane.DEFAULT_OPTION);
+			return;
+		}
+		String receiver = UserInfo.getInstance().getUserName();
+		String password = UserInfo.getInstance().getPassword();
+		String fileName = (String) fileTable.getValueAt(selectedRow, 0);
+		String author = (String) fileTable.getValueAt(selectedRow, 2);
+		if(FileServer.deleteReceive(author, receiver, fileName, password)) {
+			reflashFileList();
+		}
 	}
 
 	private void handleDownload(int selectedRow) {
-		String userName = UserInfo.getInstance().userName;
+		String userName = UserInfo.getInstance().getUserName();
 		// 检查各个配置文件，确保加密使用的密钥、公开参数等文件在
 		if (!UserHelper.checkUserInfo(userName)) {
 			JOptionPane.showMessageDialog(null, "用户配置文件不完整，无法完成操作", "错误", JOptionPane.ERROR_MESSAGE);
@@ -188,7 +197,7 @@ public class ReceiveShare extends JPanel implements ActionListener {
 	}
 
 	public void reflashFileList() {
-		String id = UserInfo.getInstance().userName;
+		String id = UserInfo.getInstance().getUserName();
 		List<Map<String, String>> fileList = FileServer.getReceiveFile(id);
 		String tableInfoList[][];
 		if (fileList == null) {

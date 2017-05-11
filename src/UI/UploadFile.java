@@ -25,16 +25,12 @@ import SecretCloudProxy.Ciphertext;
 import SecretCloudProxy.CommonDef;
 import SecretCloudProxy.CommonFileManager;
 import SecretCloudProxy.PublicKey;
-import SecretCloudProxy.ReencryptionCipher;
-import SecretCloudProxy.ReencryptionKey;
 import SecretCloudProxy.ShareCipher;
 import UserDefault.UserHelper;
 import UserDefault.UserInfo;
 import encryption.DES;
-import encryption.KeyGen;
 import encryption.encryptTask;
 import encryption.encryptionModule;
-import encryption.encryptionTest;
 import encryption.shareCipherTask;
 import it.unisa.dia.gas.jpbc.Element;
 
@@ -127,7 +123,7 @@ public class UploadFile extends JPanel implements ActionListener, Observer {
 	}
 	
 	private void defaultDESkeyInit() {
-		keyPath = UserInfo.getInstance().getDESkeyPath() + UserInfo.getInstance().defaultDESkeyName;
+		keyPath = UserInfo.getInstance().getDESkeyPath() + UserInfo.getInstance().getDefaultDESkeyName();
 		File keyfile = new File(keyPath);
 		String keyTips = "上传之前系统会使用密钥对你的文件进行加密。如果您不修改选择的密钥，将使用默认密钥进行加解密，默认密钥所在路径为" + keyPath;
 		if (!keyfile.exists()) {
@@ -164,7 +160,7 @@ public class UploadFile extends JPanel implements ActionListener, Observer {
 				t.setText(t.getText() + "\n\n" + "选择的密钥为" + keyPath);
 			}
 		} else if (o == startB) {
-			startOperation(UserInfo.getInstance().userName);
+			startOperation(UserInfo.getInstance().getUserName());
 		}
 	}
 	

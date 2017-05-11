@@ -37,7 +37,7 @@ public class MainWindow extends JFrame implements Observer {
 	}
 	
 	public void resetTitle() {
-		String loginUserName = UserInfo.getInstance().userName;
+		String loginUserName = UserInfo.getInstance().getUserName();
 		setTitle("密云 - " + loginUserName);
 	}
 	

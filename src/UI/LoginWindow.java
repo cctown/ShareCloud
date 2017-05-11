@@ -18,6 +18,7 @@ import Event.EventDef;
 import Event.observeEvent;
 import UserDefault.UserHelper;
 import UserDefault.UserInfo;
+import encryption.SHA512;
 
 @SuppressWarnings("serial")
 
@@ -257,7 +258,10 @@ public class LoginWindow extends JFrame implements MouseListener, ActionListener
 			if (arg == EventDef.loginSuccess) {
 				try {
 					String name = nameTextField.getText();
+					String password = SHA512.SHAStringToString(String.valueOf(passwordTextField.getPassword()));
+					System.out.println(password);
 					UserInfo.getInstance().setUserName(name);
+					UserInfo.getInstance().setPassword(password);
 					setVisible(false);
 					observeEvent.getInstance().setEventTag(EventDef.readyToMainWindow);
 					UserHelper.checkUserInfo(name);

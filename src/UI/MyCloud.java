@@ -19,10 +19,16 @@ import com.FileServer;
 
 import Event.EventDef;
 import Event.observeEvent;
+import SecretCloudProxy.CommonDef;
 import SecretCloudProxy.CommonFileManager;
+import SecretCloudProxy.ShareCipher;
 import UI.FileTable.FileTable;
 import UI.FileTable.FileTableModel;
 import UserDefault.UserInfo;
+import encryption.DES;
+import encryption.decryptTask;
+import encryption.encryptionModule;
+import it.unisa.dia.gas.jpbc.Element;
 
 @SuppressWarnings("serial")
 public class MyCloud extends JPanel implements ActionListener, Observer {
@@ -38,6 +44,7 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 	private JButton downB;
 	private JButton shareB;
 	private JButton deleteB;
+	private JButton reflashB;
 
 	MyCloud() {
 		configureLayout();
@@ -60,7 +67,7 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 		downB.addActionListener(this);
 		shareB.addActionListener(this);
 		deleteB.addActionListener(this);
-
+		reflashB.addActionListener(this);
 		add(j);
 	}
 
@@ -70,15 +77,17 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 
 			// titleP
 			JPanel titleP = new JPanel(new BorderLayout(10, 10));
-			JPanel buttonP = new JPanel(new GridLayout(1, 4, 1, 0));
+			JPanel buttonP = new JPanel(new GridLayout(1, 5, 1, 0));
 			upB = NomalButton("上传文件");
 			downB = NomalButton("下载");
 			shareB = NomalButton("分享");
 			deleteB = NomalButton("删除");
+			reflashB = NomalButton("刷新");
 			buttonP.add(upB);
 			buttonP.add(downB);
 			buttonP.add(shareB);
 			buttonP.add(deleteB);
+			buttonP.add(reflashB);
 
 			titleP.add(buttonP, BorderLayout.EAST);
 			JPanel jc = new JPanel();
@@ -106,7 +115,7 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 	private JButton NomalButton(String title) {
 		JButton b = new JButton();
 		b.setText(title);
-		b.setSize(66, 29);
+//		b.setSize(66, 29);
 		b.setOpaque(true);
 		b.setBorderPainted(false);
 		b.setFont(new java.awt.Font(GlobalDef.DefaultFontName, 0, 13));
@@ -130,6 +139,8 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 			handleShare();
 		} else if (o == deleteB) {
 			handleDelete();
+		} else if (o == reflashB) {
+			reflashFileList();
 		}
 	}
 
@@ -150,15 +161,37 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 			JOptionPane.showMessageDialog(null, "请先选择文件", "提醒", JOptionPane.DEFAULT_OPTION);
 			return;
 		}
-		String author = UserInfo.getInstance().userName;
+		String author = UserInfo.getInstance().getUserName();
 		String fileName = (String) fileTable.getValueAt(selectedRow, 0);
 		String cipherPath = FileServer.downloadCipher(author, fileName);
-		// 原文件的des密文
+		String desCipherPath = FileServer.downloadDesCipher(author, fileName);
+		byte[] fileBytes;
 		try {
+			// 原文件的密文
 			byte[] cipher = CommonFileManager.getBytesFromFilepath(cipherPath);
+			ShareCipher desCipher = (ShareCipher)CommonFileManager.readObjectFromFile(desCipherPath);
+			encryptionModule module = new encryptionModule();
+			byte[] skbyte = (byte[]) CommonFileManager
+					.readObjectFromFile(UserInfo.getInstance().getSecretKeyPath() + CommonDef.secretKeyAffix(author));
+			Element sk = module.newG1ElementFromBytes(skbyte).getImmutable();
+			byte[] des = decryptTask.decryptShareCipher(module, desCipher, sk);
+			fileBytes = DES.decrypt(cipher, des);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "解密失败", "提醒", JOptionPane.DEFAULT_OPTION);
+			return;
+		}
+		try {
+			String finallyPath = UserInfo.getInstance().getDownloadPath() + fileName;
+			// 保存原文
+			CommonFileManager.saveBytesToFilepath(fileBytes, finallyPath);
+			JOptionPane.showMessageDialog(null, "下载完成，结果保存在" + finallyPath, "提醒", JOptionPane.DEFAULT_OPTION);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "保存文件失败", "错误", JOptionPane.ERROR_MESSAGE);
+			return;
 		}
 	}
 
@@ -179,10 +212,17 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 			JOptionPane.showMessageDialog(null, "请先选择文件", "提醒", JOptionPane.DEFAULT_OPTION);
 			return;
 		}
+		String author = UserInfo.getInstance().getUserName();
+		String password = UserInfo.getInstance().getPassword();
+		String fileName = (String) fileTable.getValueAt(selectedRow, 0);
+		if(FileServer.deleteFile(author, fileName, password)) {
+			reflashFileList();
+			observeEvent.getInstance().setEventTag(EventDef.getMyShareFiles);
+		}
 	}
 
 	public void reflashFileList() {
-		String id = UserInfo.getInstance().userName;
+		String id = UserInfo.getInstance().getUserName();
 		List<Map<String, String>> fileList = FileServer.getFileInfoForUser(id);
 		String tableInfoList[][];
 		if (fileList == null) {

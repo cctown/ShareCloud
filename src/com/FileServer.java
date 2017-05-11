@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,9 +12,8 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
-import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
@@ -64,17 +62,117 @@ public class FileServer {
 			int status = httpClient.executeMethod(post);
 			System.out.println(status);
 			byte[] responseBody = post.getResponseBody();
-			
+
 			String s = new String(responseBody, "UTF-8");
 			JSONObject obj = JSONObject.parseObject(s);
 
 			String error_no = obj.getString("error_no");
 			if (error_no.equals("0")) { // 上传成功
-				
+
 			} else { // 失败
 				return false;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getMessage(), "服务器错误", JOptionPane.ERROR_MESSAGE);
+			return false;
+		} finally {
+			post.releaseConnection();
+		}
+		return true;
+	}
+
+	public static boolean deleteFile(String id, String fileName, String password) {
+		HttpClient httpClient = HttpClientUtil.createDefaultHttpClient();
+		PostMethod post = new PostMethod("/ProxyServer/deleteFile.htm");
+		List<NameValuePair> paramList = new ArrayList<NameValuePair>();
+		NameValuePair namePair = new NameValuePair("id", id);
+		NameValuePair fileNamePair = new NameValuePair("fileName", fileName);
+		NameValuePair passwordPair = new NameValuePair("password", password);
+		paramList.add(namePair);
+		paramList.add(fileNamePair);
+		paramList.add(passwordPair);
+		post.setRequestBody(paramList.toArray(new NameValuePair[paramList.size()]));
+		post.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "utf-8");
+		post.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
+		httpClient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
+		try {
+			httpClient.executeMethod(post);
+			byte[] responseBody = post.getResponseBody();
+			String s = new String(responseBody, "UTF-8");
+			JSONObject obj = JSONObject.parseObject(s);
+			String error_info = obj.getString("error_info");
+			JOptionPane.showMessageDialog(null, error_info, "提醒", JOptionPane.DEFAULT_OPTION);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getMessage(), "服务器错误", JOptionPane.ERROR_MESSAGE);
+			return false;
+		} finally {
+			post.releaseConnection();
+		}
+		return true;
+	}
+	
+	public static boolean deleteShare(String author, String receiver, String fileName, String password) {
+		HttpClient httpClient = HttpClientUtil.createDefaultHttpClient();
+		PostMethod post = new PostMethod("/ProxyServer/deleteShare.htm");
+		List<NameValuePair> paramList = new ArrayList<NameValuePair>();
+		NameValuePair authorPair = new NameValuePair("author", author);
+		NameValuePair receiverPair = new NameValuePair("receiver", receiver);
+		NameValuePair fileNamePair = new NameValuePair("fileName", fileName);
+		NameValuePair passwordPair = new NameValuePair("password", password);
+		paramList.add(authorPair);
+		paramList.add(receiverPair);
+		paramList.add(fileNamePair);
+		paramList.add(passwordPair);
+		post.setRequestBody(paramList.toArray(new NameValuePair[paramList.size()]));
+		post.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "utf-8");
+		post.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
+		httpClient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
+		try {
+			httpClient.executeMethod(post);
+			byte[] responseBody = post.getResponseBody();
+			String s = new String(responseBody, "UTF-8");
+			JSONObject obj = JSONObject.parseObject(s);
+			String error_info = obj.getString("error_info");
+			JOptionPane.showMessageDialog(null, error_info, "提醒", JOptionPane.DEFAULT_OPTION);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getMessage(), "服务器错误", JOptionPane.ERROR_MESSAGE);
+			return false;
+		} finally {
+			post.releaseConnection();
+		}
+		return true;
+	}
+	
+	public static boolean deleteReceive(String author, String receiver, String fileName, String password) {
+		HttpClient httpClient = HttpClientUtil.createDefaultHttpClient();
+		PostMethod post = new PostMethod("/ProxyServer/deleteReceive.htm");
+		List<NameValuePair> paramList = new ArrayList<NameValuePair>();
+		NameValuePair authorPair = new NameValuePair("author", author);
+		NameValuePair receiverPair = new NameValuePair("receiver", receiver);
+		NameValuePair fileNamePair = new NameValuePair("fileName", fileName);
+		NameValuePair passwordPair = new NameValuePair("password", password);
+		paramList.add(authorPair);
+		paramList.add(receiverPair);
+		paramList.add(fileNamePair);
+		paramList.add(passwordPair);
+		post.setRequestBody(paramList.toArray(new NameValuePair[paramList.size()]));
+		post.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "utf-8");
+		post.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
+		httpClient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
+		try {
+			httpClient.executeMethod(post);
+			byte[] responseBody = post.getResponseBody();
+			String s = new String(responseBody, "UTF-8");
+			JSONObject obj = JSONObject.parseObject(s);
+			String error_info = obj.getString("error_info");
+			JOptionPane.showMessageDialog(null, error_info, "提醒", JOptionPane.DEFAULT_OPTION);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, e.getMessage(), "服务器错误", JOptionPane.ERROR_MESSAGE);
 			return false;
@@ -235,9 +333,9 @@ public class FileServer {
 		return resMap;
 	}
 
-	public static String uploadReencryptionKey(String id, String fileName, String[] receivers,
+	public static Map<String, String> uploadReencryptionKey(String id, String fileName, String[] receivers,
 			Map<String, byte[]> rkMap) {
-		String res = null;
+		Map<String, String> resMap = new HashMap<String, String>();
 		HttpClient httpClient = HttpClientUtil.createDefaultHttpClient();
 		PostMethod post = new PostMethod("/ProxyServer/uploadReencryptionKey.htm");
 		Map<String, byte[]> map = new HashMap<String, byte[]>();
@@ -260,7 +358,8 @@ public class FileServer {
 			byte[] responseBody = post.getResponseBody();
 			String s = new String(responseBody, "UTF-8");
 			JSONObject obj = JSONObject.parseObject(s);
-			res = obj.getString("error_info");
+			resMap.put("error_info", obj.getString("error_info"));
+			resMap.put("error_no", obj.getString("error_no"));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -268,7 +367,7 @@ public class FileServer {
 		} finally {
 			post.releaseConnection();
 		}
-		return res;
+		return resMap;
 	}
 
 	// 下载被分享的密文
@@ -288,7 +387,7 @@ public class FileServer {
 		post.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "utf-8");
 		httpClient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
 		try {
-			int status = httpClient.executeMethod(post);
+			httpClient.executeMethod(post);
 			reCipherFile = new File(GlobalDef.tempPath + "ReencryptionCipher.dat");
 			output = new FileOutputStream(reCipherFile);
 			InputStream in = post.getResponseBodyAsStream();
@@ -299,7 +398,7 @@ public class FileServer {
 				System.arraycopy(buffer, 0, bytes, 0, readLength);
 				output.write(bytes);
 			}
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -318,7 +417,7 @@ public class FileServer {
 		}
 		return reCipherFile.getPath();
 	}
-	
+
 	public static String downloadCipher(String author, String fileName) {
 		FileOutputStream output = null;
 		File cipherFile;
@@ -363,42 +462,36 @@ public class FileServer {
 		return cipherFile.getPath();
 	}
 
-	public static void testDownLoad(String remoteFileName, String localFileName) {
-		HttpClient httpClient = HttpClientUtil.createDefaultHttpClient();
-		httpClient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
-		PostMethod get = new PostMethod("/ProxyServer/testDownloadFile.htm");
+	public static String downloadDesCipher(String author, String fileName) {
 		FileOutputStream output = null;
+		File cipherFile;
+		HttpClient httpClient = HttpClientUtil.createDefaultHttpClient();
+		PostMethod post = new PostMethod("/ProxyServer/downloadDesCipher.htm");
 		List<NameValuePair> paramList = new ArrayList<NameValuePair>();
-		NameValuePair authorPair = new NameValuePair("userName", "测试人员");
-		NameValuePair receiverPair = new NameValuePair("fileName", remoteFileName);
+		NameValuePair authorPair = new NameValuePair("author", author);
+		NameValuePair filePair = new NameValuePair("fileName", fileName);
 		paramList.add(authorPair);
-		paramList.add(receiverPair);
-		get.setRequestBody(paramList.toArray(new NameValuePair[paramList.size()]));
+		paramList.add(filePair);
+		post.setRequestBody(paramList.toArray(new NameValuePair[paramList.size()]));
+		post.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "utf-8");
+		httpClient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
 		try {
-			get.setRequestHeader("userName", "测试人员");
-			get.setRequestHeader("fileName", remoteFileName);
-
-			int i = httpClient.executeMethod(get);
-
-			if (HttpStatus.SC_OK == i) {
-				System.out.println("The response value of token:" + get.getResponseHeader("token"));
-				
-				File storeFile = new File(localFileName);
-				output = new FileOutputStream(storeFile);
-				InputStream in = get.getResponseBodyAsStream();
-				byte[] buffer = new byte[4096];
-				int readLength = 0;
-				while ((readLength = in.read(buffer)) > 0) {
-					byte[] bytes = new byte[readLength];
-					System.arraycopy(buffer, 0, bytes, 0, readLength);
-					output.write(bytes);
-				}
-				// 得到网络资源的字节数组,并写入文件
-			} else {
-				System.out.println("DownLoad file occurs exception, the error code is :" + i);
+			httpClient.executeMethod(post);
+			cipherFile = new File(GlobalDef.tempPath + "desCipher.dat");
+			output = new FileOutputStream(cipherFile);
+			InputStream in = post.getResponseBodyAsStream();
+			byte[] buffer = new byte[4096];
+			int readLength = 0;
+			while ((readLength = in.read(buffer)) > 0) {
+				byte[] bytes = new byte[readLength];
+				System.arraycopy(buffer, 0, bytes, 0, readLength);
+				output.write(bytes);
 			}
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getMessage(), "服务器错误", JOptionPane.ERROR_MESSAGE);
+			return null;
 		} finally {
 			try {
 				if (output != null) {
@@ -407,9 +500,10 @@ public class FileServer {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-			get.releaseConnection();
+			post.releaseConnection();
 			httpClient.getHttpConnectionManager().closeIdleConnections(0);
 		}
+		return cipherFile.getPath();
 	}
+
 }

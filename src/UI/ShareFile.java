@@ -27,16 +27,12 @@ import SecretCloudProxy.Ciphertext;
 import SecretCloudProxy.CommonDef;
 import SecretCloudProxy.CommonFileManager;
 import SecretCloudProxy.PublicKey;
-import SecretCloudProxy.ReencryptionCipher;
 import SecretCloudProxy.ReencryptionKey;
-import SecretCloudProxy.ShareCipher;
 import UserDefault.UserHelper;
 import UserDefault.UserInfo;
 import encryption.KeyGen;
 import encryption.decryptTask;
 import encryption.encryptionModule;
-import encryption.encryptionTest;
-import encryption.shareCipherTask;
 import it.unisa.dia.gas.jpbc.Element;
 
 @SuppressWarnings("serial")
@@ -167,7 +163,7 @@ public class ShareFile extends JPanel implements ActionListener {
 			JOptionPane.showMessageDialog(null, "请填写用户名", "提醒", JOptionPane.DEFAULT_OPTION);
 			return;
 		}
-		if (name.equals(UserInfo.getInstance().userName)) {
+		if (name.equals(UserInfo.getInstance().getUserName())) {
 			JOptionPane.showMessageDialog(null, "不需要给自己分享文件", "提醒", JOptionPane.DEFAULT_OPTION);
 			return;
 		}
@@ -187,7 +183,7 @@ public class ShareFile extends JPanel implements ActionListener {
 	}
 	
 	private void handleStartShare() {
-		String userName = UserInfo.getInstance().userName;
+		String userName = UserInfo.getInstance().getUserName();
 		// 检查各个配置文件，确保加密使用的密钥、公开参数等文件在
 		if (!UserHelper.checkUserInfo(userName)) {
 			nameTextArea.setText(nameTextArea.getText() + "\n\n" + "用户配置文件不完整，无法完成操作");
@@ -266,9 +262,11 @@ public class ShareFile extends JPanel implements ActionListener {
 			nameTextArea.setText(nameTextArea.getText() + "\n" + "失败");
 		}
 		//提交重加密密钥
-		String res = FileServer.uploadReencryptionKey(userName, fileName, receivers, rkMap);
-		if(res != null) {
-			nameTextArea.setText(nameTextArea.getText() + "\n" + res);
+		Map<String, String> resMap = FileServer.uploadReencryptionKey(userName, fileName, receivers, rkMap);
+		nameTextArea.setText(nameTextArea.getText() + "\n" + resMap.get("error_info"));
+		if(resMap.get("error_no").equals("0")) {
+			nameTextArea.setText(nameTextArea.getText() + "\n分享成功");
+			observeEvent.getInstance().setEventTag(EventDef.getMyShareFiles);
 		}
 	}
 

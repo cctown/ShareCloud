@@ -1,8 +1,9 @@
 package UserDefault;
 
 public class UserInfo {
-	public String userName = "";
-	public String defaultDESkeyName = "默认DES密钥.dat";
+	private String userName = "";
+	private String password = "";
+	private String defaultDESkeyName = "默认DES密钥.dat";
 	private String defaultPath = "/Users/chencaixia/SecretCloud/Client/";
 	
 	private UserInfo() {  
@@ -16,6 +17,22 @@ public class UserInfo {
 	
 	public void setUserName(String name) {
 		this.userName = name;
+	}
+	
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public String getUserName() {
+		return this.userName;
+	}
+	
+	public String getPassword() {
+		return this.password;
+	}
+	
+	public String getDefaultDESkeyName() {
+		return this.defaultDESkeyName;
 	}
 	
 	public String getDESkeyPath() {
