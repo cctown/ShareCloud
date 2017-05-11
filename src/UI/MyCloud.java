@@ -19,6 +19,7 @@ import com.FileServer;
 
 import Event.EventDef;
 import Event.observeEvent;
+import SecretCloudProxy.CommonFileManager;
 import UI.FileTable.FileTable;
 import UI.FileTable.FileTableModel;
 import UserDefault.UserInfo;
@@ -40,6 +41,7 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 
 	MyCloud() {
 		configureLayout();
+		observeEvent.getInstance().addObserver(up);
 	}
 
 	private void configureLayout() {
@@ -147,6 +149,16 @@ public class MyCloud extends JPanel implements ActionListener, Observer {
 		if (selectedRow == -1) { // -1表示没有选中行
 			JOptionPane.showMessageDialog(null, "请先选择文件", "提醒", JOptionPane.DEFAULT_OPTION);
 			return;
+		}
+		String author = UserInfo.getInstance().userName;
+		String fileName = (String) fileTable.getValueAt(selectedRow, 0);
+		String cipherPath = FileServer.downloadCipher(author, fileName);
+		// 原文件的des密文
+		try {
+			byte[] cipher = CommonFileManager.getBytesFromFilepath(cipherPath);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

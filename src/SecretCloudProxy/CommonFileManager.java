@@ -1,4 +1,4 @@
-package encryption;
+package SecretCloudProxy;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;

@@ -29,15 +29,15 @@ public class SettingP extends JPanel implements ActionListener {
 	private String name[] = {"下载文件存放位置", "加密结果存放位置", "解密结果存放位置", "DES密钥存放位置"};
 	SettingP() {
 		configureLayout();
-		downB.addActionListener(this);
-		encryptB.addActionListener(this);
-		decryptB.addActionListener(this);
-		keyB.addActionListener(this);
+//		downB.addActionListener(this);
+//		encryptB.addActionListener(this);
+//		decryptB.addActionListener(this);
+//		keyB.addActionListener(this);
 		
-		downT.setText(UserInfo.getInstance().downloadPath);
-		encryptT.setText(UserInfo.getInstance().encryptPath);
-		decryptT.setText(UserInfo.getInstance().decryptPath);
-		keyT.setText(UserInfo.getInstance().DESkeyPath);
+		downT.setText(UserInfo.getInstance().getDownloadPath());
+		encryptT.setText(UserInfo.getInstance().getEncryptPath());
+		decryptT.setText(UserInfo.getInstance().getDecryptPath());
+		keyT.setText(UserInfo.getInstance().getDESkeyPath());
 	}
 	
 	private void configureLayout() {
@@ -138,7 +138,7 @@ public class SettingP extends JPanel implements ActionListener {
 			jfile.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			if(jfile.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
 				downT.setText(jfile.getSelectedFile().getPath());
-				UserInfo.getInstance().downloadPath = downT.getText();
+//				UserInfo.getInstance().downloadPath = downT.getText();
 			}
 		}
 		else if(o == encryptB) {
@@ -146,7 +146,7 @@ public class SettingP extends JPanel implements ActionListener {
 			jfile.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			if(jfile.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
 				encryptT.setText(jfile.getSelectedFile().getPath());
-				UserInfo.getInstance().encryptPath = encryptT.getText();
+//				UserInfo.getInstance().encryptPath = encryptT.getText();
 			}
 		}
 		else if(o == decryptB) {
@@ -154,7 +154,7 @@ public class SettingP extends JPanel implements ActionListener {
 			jfile.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			if(jfile.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
 				decryptT.setText(jfile.getSelectedFile().getPath());
-				UserInfo.getInstance().decryptPath = decryptT.getText();
+//				UserInfo.getInstance().decryptPath = decryptT.getText();
 			}
 		}
 		else if(o == keyB) {
@@ -162,7 +162,7 @@ public class SettingP extends JPanel implements ActionListener {
 			jfile.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			if(jfile.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
 				keyT.setText(jfile.getSelectedFile().getPath());
-				UserInfo.getInstance().DESkeyPath = keyT.getText();
+//				UserInfo.getInstance().DESkeyPath = keyT.getText();
 			}
 		}
 	}

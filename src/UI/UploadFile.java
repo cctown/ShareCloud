@@ -6,6 +6,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -21,19 +23,23 @@ import Event.EventDef;
 import Event.observeEvent;
 import SecretCloudProxy.Ciphertext;
 import SecretCloudProxy.CommonDef;
+import SecretCloudProxy.CommonFileManager;
 import SecretCloudProxy.PublicKey;
+import SecretCloudProxy.ReencryptionCipher;
+import SecretCloudProxy.ReencryptionKey;
 import SecretCloudProxy.ShareCipher;
 import UserDefault.UserHelper;
 import UserDefault.UserInfo;
-import encryption.CommonFileManager;
 import encryption.DES;
+import encryption.KeyGen;
 import encryption.encryptTask;
 import encryption.encryptionModule;
+import encryption.encryptionTest;
 import encryption.shareCipherTask;
 import it.unisa.dia.gas.jpbc.Element;
 
 @SuppressWarnings("serial")
-public class UploadFile extends JPanel implements ActionListener {
+public class UploadFile extends JPanel implements ActionListener, Observer {
 	JButton backB;
 	JButton choseFileB;
 	JButton choseKeyB;
@@ -44,18 +50,6 @@ public class UploadFile extends JPanel implements ActionListener {
 
 	UploadFile() {
 		configureLayout();
-		keyPath = UserInfo.getInstance().DESkeyPath + UserInfo.getInstance().defaultDESkeyName;
-		File keyfile = new File(keyPath);
-		if (!keyfile.exists()) {
-			try {
-				DES.generateDefaultKeyToPath(keyPath);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				t.setText("");
-			}
-		}
-		t.setText("上传之前系统会使用密钥对你的文件进行加密。如果您不修改选择的密钥，将使用默认密钥进行加解密，默认密钥所在路径为" + keyPath + "\n\n" + "请选择需要上传的文件。");
 	}
 
 	private void configureLayout() {
@@ -131,7 +125,25 @@ public class UploadFile extends JPanel implements ActionListener {
 
 		return b;
 	}
-
+	
+	private void defaultDESkeyInit() {
+		keyPath = UserInfo.getInstance().getDESkeyPath() + UserInfo.getInstance().defaultDESkeyName;
+		File keyfile = new File(keyPath);
+		String keyTips = "上传之前系统会使用密钥对你的文件进行加密。如果您不修改选择的密钥，将使用默认密钥进行加解密，默认密钥所在路径为" + keyPath;
+		if (!keyfile.exists()) {
+			try {
+				DES.generateDefaultKeyToPath(keyPath);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				keyTips = "默认密钥丢失，请选择新的密钥。";
+			}
+		}
+		t.setText(keyTips);
+		String fileTips = "请选择需要上传的文件。";
+		t.setText(t.getText() + "\n\n" + fileTips);
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
@@ -155,6 +167,16 @@ public class UploadFile extends JPanel implements ActionListener {
 			startOperation(UserInfo.getInstance().userName);
 		}
 	}
+	
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		if (o instanceof observeEvent) {
+			if (arg == EventDef.readyToMainWindow) {
+				defaultDESkeyInit();
+			}
+		}
+	}
 
 	private void startOperation(String id) {
 		// 检查各个配置文件，确保加密使用的密钥、公开参数等文件在
@@ -169,11 +191,20 @@ public class UploadFile extends JPanel implements ActionListener {
 		// 获取指定路径的密钥
 		try {
 			keyBytes = CommonFileManager.getBytesFromFilepath(keyPath);
-			t.setText(t.getText() + "\n\n" + "成功读取密钥");
+			t.setText(t.getText() + "\n\n" + "成功读取密钥文件");
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 			t.setText(t.getText() + "\n\n" + "选中密钥有误，选中密钥路径为：" + keyPath + "，请检查该路径并重新选择");
+			return;
+		}
+		try {
+			keyBytes = DES.generateKeyFromBytes(keyBytes);
+			t.setText(t.getText() + "\n" + "成功初始化密钥");
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			t.setText(t.getText() + "\n" + "初始化密钥失败，无法加密文件上传。");
 			return;
 		}
 		// 获取指定路径的明文
@@ -201,8 +232,7 @@ public class UploadFile extends JPanel implements ActionListener {
 		}
 		PublicKey pk;
 		try {
-			pk = (PublicKey) CommonFileManager
-					.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.publicKeyAffix(id));
+			pk = (PublicKey) CommonFileManager.readObjectFromFile(CommonDef.pkPath + CommonDef.publicKeyAffix(id));
 			t.setText(t.getText() + "\n" + "成功获取用户公钥");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -222,7 +252,6 @@ public class UploadFile extends JPanel implements ActionListener {
 			t.setText(t.getText() + "\n\n" + "加密源文件失败，详细信息如下：" + e.getMessage());
 			return;
 		}
-
 		Element condition = module.newGTRandomElement().getImmutable();
 		t.setText(t.getText() + "\n" + "开始加密密钥");
 		// 加密DES密钥，用于代理重加密分享

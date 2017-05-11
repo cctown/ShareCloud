@@ -25,15 +25,18 @@ import Event.EventDef;
 import Event.observeEvent;
 import SecretCloudProxy.Ciphertext;
 import SecretCloudProxy.CommonDef;
+import SecretCloudProxy.CommonFileManager;
 import SecretCloudProxy.PublicKey;
+import SecretCloudProxy.ReencryptionCipher;
 import SecretCloudProxy.ReencryptionKey;
+import SecretCloudProxy.ShareCipher;
 import UserDefault.UserHelper;
 import UserDefault.UserInfo;
-import encryption.CommonFileManager;
 import encryption.KeyGen;
 import encryption.decryptTask;
 import encryption.encryptionModule;
-
+import encryption.encryptionTest;
+import encryption.shareCipherTask;
 import it.unisa.dia.gas.jpbc.Element;
 
 @SuppressWarnings("serial")
@@ -204,7 +207,7 @@ public class ShareFile extends JPanel implements ActionListener {
 		
 		Element sk;
 		try {
-			byte[] skbyte = (byte[])CommonFileManager.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.secretKeyAffix(userName));
+			byte[] skbyte = (byte[])CommonFileManager.readObjectFromFile(UserInfo.getInstance().getSecretKeyPath() + CommonDef.secretKeyAffix(userName));
 			sk = module.newG1ElementFromBytes(skbyte).getImmutable();
 			nameTextArea.setText(nameTextArea.getText() + "\n" + "成功获取用户私钥");
 		} catch (Exception e) {
@@ -233,7 +236,7 @@ public class ShareFile extends JPanel implements ActionListener {
 			String reveiverID = idArray.get(j);
 			PublicKey pk;
 			try {
-				pk = (PublicKey) CommonFileManager.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.publicKeyAffix(reveiverID));
+				pk = (PublicKey) CommonFileManager.readObjectFromFile(CommonDef.pkPath + CommonDef.publicKeyAffix(reveiverID));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -3,12 +3,7 @@ package UserDefault;
 public class UserInfo {
 	public String userName = "";
 	public String defaultDESkeyName = "默认DES密钥.dat";
-	public String DESkeyPath = "/Users/chencaixia/SecretCloud/Client/key/";
-	public String keyPath = "/Users/chencaixia/SecretCloud/Client/key/";
-	public String paramsPath = "/Users/chencaixia/SecretCloud/Client/params/";
-	public String downloadPath = "/Users/chencaixia/SecretCloud/Client/download/";
-	public String encryptPath = "/Users/chencaixia/SecretCloud/Client/encrypt/";
-	public String decryptPath = "/Users/chencaixia/SecretCloud/decrypt/Client/";
+	private String defaultPath = "/Users/chencaixia/SecretCloud/Client/";
 	
 	private UserInfo() {  
     }
@@ -21,5 +16,29 @@ public class UserInfo {
 	
 	public void setUserName(String name) {
 		this.userName = name;
+	}
+	
+	public String getDESkeyPath() {
+		return defaultPath + this.userName + "/DESkey/";
+	}
+	
+	public String getParamsPath() {
+		return defaultPath + this.userName + "/params/";
+	}
+	
+	public String getSecretKeyPath() {
+		return defaultPath + this.userName + "/sk/";
+	}
+	
+	public String getDownloadPath() {
+		return defaultPath + this.userName + "/download/";
+	}
+	
+	public String getEncryptPath() {
+		return defaultPath + this.userName + "/encrypt/";
+	}
+	
+	public String getDecryptPath() {
+		return defaultPath + this.userName + "/decrypt/";
 	}
 }

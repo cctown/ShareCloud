@@ -2,6 +2,7 @@ package encryption;
 
 import SecretCloudProxy.Ciphertext;
 import SecretCloudProxy.CommonDef;
+import SecretCloudProxy.CommonFileManager;
 import SecretCloudProxy.PublicKey;
 import SecretCloudProxy.ReencryptionCipher;
 import SecretCloudProxy.ReencryptionKey;
@@ -13,11 +14,11 @@ public class encryptionTest {
 	private Element dA;
 	private Element dB;
 	private Element t;
-	private String IDA = "小花";
-	private String IDB = "老朽";
-	private String testS = "测试数据:安全已经被认为是最重要的chencaixia";
+	private String IDA = "xiao";
+	private String IDB = "小花";
+	private String testS = "测试数据:安全已经被认为是最重要的";
 	
-	private static String paramsPath = "/Users/chencaixia/SecretCloud/params/";
+	private static String paramsPath = "/Users/chencaixia/SecretCloud/Client/params/";
 	private Element skA;
 	private Element skB;
 	private PublicKey pkA;
@@ -25,36 +26,39 @@ public class encryptionTest {
 	private static encryptionModule module;
 	
 	@SuppressWarnings("unused")
-	public static void main (String args[]) throws Exception {
-		encryptionModule module = new encryptionModule();
-		encryptionTest gen = new encryptionTest(module);
-	}
+//	public static void main (String args[]) throws Exception {
+//		encryptionModule module = new encryptionModule();
+//		encryptionTest gen = new encryptionTest(module);
+//	}
 	
 	public encryptionTest(encryptionModule mod) throws Exception {
 		module = mod;
-		getPartKey();
-		KeyGen.skpkGen(module, IDA, dA);
-		KeyGen.skpkGen(module, IDB, dB);
+//		getPartKey();
+//		KeyGen.skpkGen(module, IDA, dA);
+//		KeyGen.skpkGen(module, IDB, dB);
 		getskpk();
 		
 		t = module.newGTRandomElement().getImmutable();
 		byte[] sm = testS.getBytes();
+		byte[] odes = CommonFileManager.getBytesFromFilepath(UserInfo.getInstance().getDESkeyPath() + UserInfo.getInstance().defaultDESkeyName);
+		Element m = module.newGTElementFromBytes(odes).getImmutable();
+		byte[] sb = m.toBytes();
+//		System.out.println("原文为:" + testS);
+//		System.out.println("加密之前的字节长度为：" + sm.length);
+//		Ciphertext cipher = encryptTask.encryptMsg(module, testS.getBytes(), pkB, t);
+//		System.out.println("加密之后的字节长度为：" + cipher.me.length);
+//		byte[] m = decryptTask.decryptMsg(module, cipher, skB);
+//		System.out.println("解密之后的字节长度为：" + m.length);
+//		String msg = new String(m);
+//		System.out.println("解密出原文为：" + msg);
 		
-		System.out.println("原文为:" + testS);
-		System.out.println("加密之前的字节长度为：" + sm.length);
-		Ciphertext cipher = encryptTask.encryptMsg(module, testS.getBytes(), pkB, t);
-		System.out.println("加密之后的字节长度为：" + cipher.me.length);
-		byte[] m = decryptTask.decryptMsg(module, cipher, skB);
-		System.out.println("解密之后的字节长度为：" + m.length);
-		String msg = new String(m);
-		System.out.println("解密出原文为：" + msg);
-		
-		ShareCipher shareCipher = shareCipherTask.encryptShareMsg(module, testS.getBytes(), pkA, t);
+		ShareCipher shareCipher = shareCipherTask.encryptShareMsg(module, sb, pkA, t);
 		Element grt = module.newG1ElementFromBytes(shareCipher.grt).getImmutable();
 		ReencryptionKey reKey = KeyGen.rkGen(module, skA, pkB, grt, t);
 		ReencryptionCipher reCipher = reencryptMsg(module, shareCipher, reKey);
 		byte[] m2 = shareCipherTask.decryptShareMsg(module, reCipher, skB);
 		String msg2 = new String(m2);
+		byte[] b = msg2.getBytes();
 		System.out.println("重加密解密出原文为：" + msg2);
 	}
 	
@@ -66,18 +70,18 @@ public class encryptionTest {
 	}
 	
 	private void getskpk() throws Exception {
-		byte[] skAbyte = (byte[])CommonFileManager.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.secretKeyAffix(IDA));
-		byte[] skBbyte = (byte[])CommonFileManager.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.secretKeyAffix(IDB));
+		byte[] skAbyte = (byte[])CommonFileManager.readObjectFromFile(UserInfo.getInstance().getSecretKeyPath() + CommonDef.secretKeyAffix(IDA));
+		byte[] skBbyte = (byte[])CommonFileManager.readObjectFromFile(UserInfo.getInstance().getSecretKeyPath() + CommonDef.secretKeyAffix(IDB));
 		skA = module.newG1ElementFromBytes(skAbyte).getImmutable();
 		skB = module.newG1ElementFromBytes(skBbyte).getImmutable();
 		
-		pkA = (PublicKey)CommonFileManager.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.publicKeyAffix(IDA));
-		pkB = (PublicKey)CommonFileManager.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.publicKeyAffix(IDB));
+		pkA = (PublicKey)CommonFileManager.readObjectFromFile(CommonDef.pkPath + CommonDef.publicKeyAffix(IDA));
+		pkB = (PublicKey)CommonFileManager.readObjectFromFile(CommonDef.pkPath + CommonDef.publicKeyAffix(IDB));
 	}
 	
 	//代理重加密
 	//c'' = m * e(gA^r，g^s·xAt) * e(gA^-s·xA · H2^t (x)，g^rt) = shareCipher.cipher * e(rk.gH, shareCipher.grt)
-	public ReencryptionCipher reencryptMsg(encryptionModule module, ShareCipher shareCipher, ReencryptionKey rk) {
+	public static ReencryptionCipher reencryptMsg(encryptionModule module, ShareCipher shareCipher, ReencryptionKey rk) {
 		Element m = module.newGTElementFromBytes(shareCipher.cipher).getImmutable();
 		Element gH = module.newG1ElementFromBytes(rk.gH).getImmutable();
 		Element grt = module.newG1ElementFromBytes(shareCipher.grt).getImmutable();

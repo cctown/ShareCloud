@@ -16,12 +16,12 @@ import javax.swing.JScrollPane;
 import com.FileServer;
 
 import SecretCloudProxy.CommonDef;
+import SecretCloudProxy.CommonFileManager;
 import SecretCloudProxy.ReencryptionCipher;
 import UI.FileTable.FileTable;
 import UI.FileTable.FileTableModel;
 import UserDefault.UserHelper;
 import UserDefault.UserInfo;
-import encryption.CommonFileManager;
 import encryption.DES;
 import encryption.encryptionModule;
 import encryption.shareCipherTask;
@@ -110,8 +110,8 @@ public class ReceiveShare extends JPanel implements ActionListener {
 	}
 
 	private void handleDelete() {
-		// FileServer.testDownLoad("代理重加密论文方案概述.pptx",
-		// "/Users/chencaixia/files/代理重加密论文方案概述.pptx");
+		 FileServer.testDownLoad("代理重加密论文方案概述.pptx", "/Users/chencaixia/files/房子.jpg");
+//		 FileServer.testDownLoad("代理重加密论文方案概述.pptx", "/Users/chencaixia/files/代理重加密论文方案概述.pptx");
 	}
 
 	private void handleDownload(int selectedRow) {
@@ -135,7 +135,7 @@ public class ReceiveShare extends JPanel implements ActionListener {
 		Element sk;
 		try {
 			byte[] skbyte = (byte[]) CommonFileManager
-					.readObjectFromFile(UserInfo.getInstance().keyPath + CommonDef.secretKeyAffix(userName));
+					.readObjectFromFile(UserInfo.getInstance().getSecretKeyPath() + CommonDef.secretKeyAffix(userName));
 			sk = module.newG1ElementFromBytes(skbyte).getImmutable();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -146,17 +146,16 @@ public class ReceiveShare extends JPanel implements ActionListener {
 
 		String author = (String) fileTable.getValueAt(selectedRow, 2);
 		String fileName = (String) fileTable.getValueAt(selectedRow, 0);
-
+		
+		String cipherPath = FileServer.downloadCipher(author, fileName);
 		String reCipherPath = FileServer.downloadReencryptionCipher(author, userName, fileName);
-		String cipherPath = FileServer.downloadCipher(author, userName, fileName);
 		byte[] cipher;
 		byte[] desKey;
 		try {
+			// 原文件的des密文
+			cipher = CommonFileManager.getBytesFromFilepath(cipherPath);
 			// des密钥的重加密密文
 			ReencryptionCipher reencryptionCipher = (ReencryptionCipher) CommonFileManager.readObjectFromFile(reCipherPath);
-			// 原文件的des密文
-			cipher = (byte[]) CommonFileManager.getBytesFromFilepath(cipherPath);
-
 			// 解密得到des密钥
 			desKey = shareCipherTask.decryptShareMsg(module, reencryptionCipher, sk);
 		} catch (Exception e1) {
@@ -176,8 +175,10 @@ public class ReceiveShare extends JPanel implements ActionListener {
 			return;
 		}
 		try {
+			String finallyPath = UserInfo.getInstance().getDownloadPath() + fileName;
 			// 保存原文
-			CommonFileManager.saveBytesToFilepath(fileBytes, UserInfo.getInstance().decryptPath + fileName);
+			CommonFileManager.saveBytesToFilepath(fileBytes, finallyPath);
+			JOptionPane.showMessageDialog(null, "下载完成，结果保存在" + finallyPath, "提醒", JOptionPane.DEFAULT_OPTION);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

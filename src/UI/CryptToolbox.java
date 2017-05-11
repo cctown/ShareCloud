@@ -7,6 +7,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -19,13 +21,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
+import Event.EventDef;
+import Event.observeEvent;
+import SecretCloudProxy.CommonFileManager;
 import UserDefault.UserInfo;
-import encryption.CommonFileManager;
 import encryption.DES;
 
 @SuppressWarnings("serial")
 
-public class CryptToolbox extends JPanel implements ActionListener{
+public class CryptToolbox extends JPanel implements ActionListener, Observer {
 	private JButton keyB;
 	private JButton fileB;
 	private JButton startB;
@@ -40,22 +44,6 @@ public class CryptToolbox extends JPanel implements ActionListener{
 	
 	CryptToolbox() {
 		configureLayout();
-		
-		keyPath = UserInfo.getInstance().DESkeyPath + UserInfo.getInstance().defaultDESkeyName;
-		File keyfile = new File(keyPath);
-		String keyTips = "如果您不修改选择的密钥，将使用默认密钥进行加解密，默认密钥所在路径为" + keyPath;;
-		if (!keyfile.exists()) {
-			try {
-				DES.generateDefaultKeyToPath(keyPath);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				keyTips = "默认密钥丢失，请选择新的密钥。";
-			}
-		}
-		t.setText(keyTips);
-		String fileTips = "请选择需要加密或解密的文件。";
-		t.setText(t.getText() + "\n\n" + fileTips);
 	}
 	
 	private void configureLayout() {
@@ -176,6 +164,34 @@ public class CryptToolbox extends JPanel implements ActionListener{
 		}
 	}
 	
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		if (o instanceof observeEvent) {
+			if (arg == EventDef.readyToMainWindow) {
+				defaultDESkeyInit();
+			}
+		}
+	}
+	
+	private void defaultDESkeyInit() {
+		keyPath = UserInfo.getInstance().getDESkeyPath() + UserInfo.getInstance().defaultDESkeyName;
+		File keyfile = new File(keyPath);
+		String keyTips = "如果您不修改选择的密钥，将使用默认密钥进行加解密，默认密钥所在路径为" + keyPath;
+		if (!keyfile.exists()) {
+			try {
+				DES.generateDefaultKeyToPath(keyPath);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				keyTips = "默认密钥丢失，请选择新的密钥。";
+			}
+		}
+		t.setText(keyTips);
+		String fileTips = "请选择需要加密或解密的文件。";
+		t.setText(t.getText() + "\n\n" + fileTips);
+	}
+	
 	private void generateNewKey() {
 		String inputS;
 		String name;
@@ -193,7 +209,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 		}
 		String finallyPath;
 		try {
-			finallyPath = checkSameFileName(UserInfo.getInstance().DESkeyPath + name, ".dat");
+			finallyPath = checkSameFileName(UserInfo.getInstance().getDESkeyPath() + name, ".dat");
 			DES.generateKeyFromBytesToPath(inputS.getBytes(), finallyPath);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -201,7 +217,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 			t.setText(t.getText() + "\n\n" + "DES密钥生成失败，详细信息如下：\n\n" + e.getMessage());
 			return;
 		}
-		t.setText(t.getText() + "\n\n" + "成功生成新的DES密钥，结果保存在" + finallyPath + "请前去查看。\n您可以使用该密钥来对文件进行加解密。");
+		t.setText(t.getText() + "\n\n" + "成功生成新的DES密钥，结果保存在" + finallyPath + "，请前去查看。\n您可以使用该密钥来对文件进行加解密。");
 	}
 	
 	private void startOperation() {
@@ -225,7 +241,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
-			t.setText(t.getText() + "\n\n" + "选中文件有误，选中文件路径为：" + filePath + "请检查该路径并重新选择");
+			t.setText(t.getText() + "\n\n" + "选中文件有误，选中文件路径为：" + filePath + "，请检查该路径并重新选择");
 			return;
 		}
 		File file = new File(filePath);
@@ -243,7 +259,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 				return;
 			}
 			try {
-				finallyPath = checkSameFileName(UserInfo.getInstance().encryptPath + fileName + "_加密结果", fileAffix);
+				finallyPath = checkSameFileName(UserInfo.getInstance().getEncryptPath() + fileName + "_加密结果", fileAffix);
 				CommonFileManager.saveBytesToFilepath(cipher, finallyPath);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -263,7 +279,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 				return;
 			}
 			try {
-				finallyPath = checkSameFileName(UserInfo.getInstance().decryptPath + fileName + "_解密结果", fileAffix);
+				finallyPath = checkSameFileName(UserInfo.getInstance().getDecryptPath() + fileName + "_解密结果", fileAffix);
 				CommonFileManager.saveBytesToFilepath(cipher, finallyPath);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -271,7 +287,7 @@ public class CryptToolbox extends JPanel implements ActionListener{
 				t.setText(t.getText() + "\n\n保存文件失败，详细信息如下：\n\n" + e1.getMessage());
 				return;
 			}
-			t.setText(t.getText() + "\n\n" + "解密完成，结果保存在" + finallyPath + "请前去查看。\n如果解密结果不正确，请检查是否使用了正确的密钥进行解密。");
+			t.setText(t.getText() + "\n\n" + "解密完成，结果保存在" + finallyPath + "，请前去查看。\n如果解密结果不正确，请检查是否使用了正确的密钥进行解密。");
 		}
 	}
 	

@@ -2,6 +2,7 @@ package encryption;
 
 import SecretCloudProxy.Ciphertext;
 import SecretCloudProxy.CommonDef;
+import SecretCloudProxy.CommonFileManager;
 import SecretCloudProxy.PublicKey;
 import SecretCloudProxy.ReencryptionKey;
 import UserDefault.UserInfo;
@@ -14,13 +15,13 @@ public class KeyGen {
 		Element xA = module.newGTRandomElement().getImmutable();
 		//私钥 skA = gA^s^xA
 		Element sk = dA.duplicate().powZn(xA).getImmutable();
-		CommonFileManager.writeObjectToFile(sk.toBytes(), UserInfo.getInstance().keyPath + CommonDef.secretKeyAffix(ID));
+		CommonFileManager.writeObjectToFile(sk.toBytes(), UserInfo.getInstance().getSecretKeyPath() + CommonDef.secretKeyAffix(ID));
 		 
 		//公钥 pkA = (gA, g^s^xA)), 其中gA= H1(IDA)
 		Element gA = module.H1(ID.getBytes()).getImmutable();
 		Element gsxA = module.getgps().duplicate().powZn(xA).getImmutable();
 		PublicKey pk = new PublicKey(gA, gsxA);
-		CommonFileManager.writeObjectToFile(pk, UserInfo.getInstance().keyPath + CommonDef.publicKeyAffix(ID));
+		CommonFileManager.writeObjectToFile(pk, CommonDef.pkPath + CommonDef.publicKeyAffix(ID));
 	}
 	
 	//生成重加密密钥

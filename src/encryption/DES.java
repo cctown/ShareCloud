@@ -7,7 +7,9 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
+import SecretCloudProxy.CommonFileManager;
 import UserDefault.UserInfo;
+import it.unisa.dia.gas.jpbc.Element;
 
 public class DES {
 	private static final String originalKey = "canbNCJDSBBibSDFASWEgadmvwiNonocwqsf";
@@ -16,7 +18,7 @@ public class DES {
 	private static final String decryptPath = "/Users/chencaixia/SecretCloud/decrypt/解密结果.txt";
 	
 	public static void main (String args[]) throws Exception {
-		byte[] key = generateDefaultKeyToPath(UserInfo.getInstance().DESkeyPath);
+		byte[] key = generateDefaultKeyToPath(UserInfo.getInstance().getDESkeyPath());
 		//获取指定路径的明文
 		byte[] file = CommonFileManager.getBytesFromFilepath(path);
 		//将明文加密得到密文比特
@@ -33,18 +35,31 @@ public class DES {
 	
 	public static byte[] generateDefaultKeyToPath(String path) throws Exception {
 		byte[] key = SHA512.SHAByte(originalKey.getBytes());
+		encryptionModule module = new encryptionModule();
+		Element m = module.newGTElementFromBytes(key).getImmutable();
 		//将密钥比特转换成文件存起来
-		CommonFileManager.saveBytesToFilepath(key, path);
-		return key;
+		CommonFileManager.saveBytesToFilepath(m.toBytes(), path);
+		return m.toBytes();
+	}
+	
+	//根据bytes生成密钥
+	public static byte[] generateKeyFromBytes(byte[] bytes) throws Exception {
+		//获取密钥串，并将其散列为512位，方便后面代理重加密分享，避免用户设置的密钥过长导致pbc不能处理
+		byte[] key = SHA512.SHAByte(bytes);
+		encryptionModule module = new encryptionModule();
+		Element m = module.newGTElementFromBytes(key).getImmutable();
+		return m.toBytes();
 	}
 	
 	//根据bytes生成密钥文件，保存在path里
 	public static byte[] generateKeyFromBytesToPath(byte[] bytes, String path) throws Exception {
 		//获取密钥串，并将其散列为512位，方便后面代理重加密分享，避免用户设置的密钥过长导致pbc不能处理
 		byte[] key = SHA512.SHAByte(bytes);
+		encryptionModule module = new encryptionModule();
+		Element m = module.newGTElementFromBytes(key).getImmutable();
 		//将密钥比特转换成文件存起来
-		CommonFileManager.saveBytesToFilepath(key, path);
-		return key;
+		CommonFileManager.saveBytesToFilepath(m.toBytes(), path);
+		return m.toBytes();
 	}
 	
 	public static byte[] encrypt(byte[] data, byte[] key) throws Exception {

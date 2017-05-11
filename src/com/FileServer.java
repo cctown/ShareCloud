@@ -27,9 +27,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import SecretCloudProxy.Ciphertext;
+import SecretCloudProxy.CommonFileManager;
 import SecretCloudProxy.ShareCipher;
 import UI.GlobalDef;
-import encryption.CommonFileManager;
 
 public class FileServer {
 
@@ -61,14 +61,17 @@ public class FileServer {
 			post.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "utf-8");
 			httpClient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
 			httpClient.getParams().setContentCharset("UTF-8");
-			httpClient.executeMethod(post);
+			int status = httpClient.executeMethod(post);
+			System.out.println(status);
 			byte[] responseBody = post.getResponseBody();
+			
 			String s = new String(responseBody, "UTF-8");
 			JSONObject obj = JSONObject.parseObject(s);
 
-			String error_no = new String(obj.getBytes("error_no"));
+			String error_no = obj.getString("error_no");
 			if (error_no.equals("0")) { // 上传成功
-			} else if (error_no.equals("-1")) { // 失败
+				
+			} else { // 失败
 				return false;
 			}
 		} catch (Exception e) {
@@ -316,8 +319,48 @@ public class FileServer {
 		return reCipherFile.getPath();
 	}
 	
-	public static String downloadCipher(String author, String receiver, String fileName) {
-		return null;
+	public static String downloadCipher(String author, String fileName) {
+		FileOutputStream output = null;
+		File cipherFile;
+		HttpClient httpClient = HttpClientUtil.createDefaultHttpClient();
+		PostMethod post = new PostMethod("/ProxyServer/downloadCipher.htm");
+		List<NameValuePair> paramList = new ArrayList<NameValuePair>();
+		NameValuePair authorPair = new NameValuePair("author", author);
+		NameValuePair filePair = new NameValuePair("fileName", fileName);
+		paramList.add(authorPair);
+		paramList.add(filePair);
+		post.setRequestBody(paramList.toArray(new NameValuePair[paramList.size()]));
+		post.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "utf-8");
+		httpClient.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
+		try {
+			httpClient.executeMethod(post);
+			cipherFile = new File(GlobalDef.tempPath + "cipher.dat");
+			output = new FileOutputStream(cipherFile);
+			InputStream in = post.getResponseBodyAsStream();
+			byte[] buffer = new byte[4096];
+			int readLength = 0;
+			while ((readLength = in.read(buffer)) > 0) {
+				byte[] bytes = new byte[readLength];
+				System.arraycopy(buffer, 0, bytes, 0, readLength);
+				output.write(bytes);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getMessage(), "服务器错误", JOptionPane.ERROR_MESSAGE);
+			return null;
+		} finally {
+			try {
+				if (output != null) {
+					output.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			post.releaseConnection();
+			httpClient.getHttpConnectionManager().closeIdleConnections(0);
+		}
+		return cipherFile.getPath();
 	}
 
 	public static void testDownLoad(String remoteFileName, String localFileName) {
@@ -339,7 +382,7 @@ public class FileServer {
 
 			if (HttpStatus.SC_OK == i) {
 				System.out.println("The response value of token:" + get.getResponseHeader("token"));
-
+				
 				File storeFile = new File(localFileName);
 				output = new FileOutputStream(storeFile);
 				InputStream in = get.getResponseBodyAsStream();

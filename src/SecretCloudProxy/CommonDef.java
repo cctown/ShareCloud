@@ -1,7 +1,6 @@
 package SecretCloudProxy;
 
 public class CommonDef {
-	public static final String paramsAffix = "params.dat";
 	
 	public static String partKeyAffix(String ID) {
 		return ID + "_partKey.dat";
@@ -20,5 +19,7 @@ public class CommonDef {
 		return ownerID + "-" +receiverID + "-" + fileName + "_rk.dat";
 	}
 	
-	public final String pkPath = "/Users/chencaixia/SecretCloud/Client/key/";
+	public static final String pkPath = "/Users/chencaixia/SecretCloud/PublicPath/pk/";
+	public static final String paramsPath = "/Users/chencaixia/SecretCloud/PublicPath/params.dat";
+	public static final String propertiesPath = "/Users/chencaixia/SecretCloud/PublicPath/a.properties";
 }

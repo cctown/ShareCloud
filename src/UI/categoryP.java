@@ -22,6 +22,12 @@ public class categoryP extends JPanel implements Observer {
 	private SettingP set;
 
 	categoryP() {
+		configureLayout();
+		observeEvent.getInstance().addObserver(cloud);
+		observeEvent.getInstance().addObserver(tool);
+	}
+	
+	private void configureLayout() {
 		setLayout(new BorderLayout());
 		bar = new NavigationBar();
 		add(bar, BorderLayout.WEST);
@@ -50,8 +56,6 @@ public class categoryP extends JPanel implements Observer {
 			add(cardName[2], receive);
 			add(cardName[3], tool);
 			add(cardName[4], set);
-
-			observeEvent.getInstance().addObserver(cloud);
 		}
 	}
 
