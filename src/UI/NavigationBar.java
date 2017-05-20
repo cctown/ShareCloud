@@ -21,7 +21,7 @@ public class NavigationBar extends JPanel {
 	private NomalPanel share;
 	private NomalPanel receive;
 	private NomalPanel tool;
-	private NomalPanel set;
+//	private NomalPanel set;
 	
 	NavigationBar () {
 		setLayout(new BorderLayout(10, 0));
@@ -68,13 +68,13 @@ public class NavigationBar extends JPanel {
 			share = new NomalPanel(GlobalDef.share, GlobalDef.shareImage_1);
 			receive = new NomalPanel(GlobalDef.receive, GlobalDef.receiveImage_1);
 			tool = new NomalPanel(GlobalDef.tool, GlobalDef.toolImage_1);
-			set = new NomalPanel(GlobalDef.set, GlobalDef.setImage_1);
+//			set = new NomalPanel(GlobalDef.set, GlobalDef.setImage_1);
 			
 			add(cloud);
 			add(share);
 			add(receive);
 			add(tool);
-			add(set);
+//			add(set);
 		}
 	}
 	
@@ -166,11 +166,11 @@ public class NavigationBar extends JPanel {
 			tool.icon.setIcon(new ImageIcon(GlobalDef.toolImage_2));
 			observeEvent.getInstance().setEventTag(EventDef.toolTap);
 		}
-		else if (p == GlobalDef.set) {
-			set.label.setForeground(GlobalDef.selecetdGray);
-			set.icon.setIcon(new ImageIcon(GlobalDef.setImage_2));
-			observeEvent.getInstance().setEventTag(EventDef.setTap);
-		}
+//		else if (p == GlobalDef.set) {
+//			set.label.setForeground(GlobalDef.selecetdGray);
+//			set.icon.setIcon(new ImageIcon(GlobalDef.setImage_2));
+//			observeEvent.getInstance().setEventTag(EventDef.setTap);
+//		}
 		else {
 			System.out.println("目标页错误，请检查参数");
 			return;
@@ -196,9 +196,9 @@ public class NavigationBar extends JPanel {
 			tool.label.setForeground(GlobalDef.deepPurple);
 			tool.icon.setIcon(new ImageIcon(GlobalDef.toolImage_1));
 		}
-		else if (t == GlobalDef.set) {
-			set.label.setForeground(GlobalDef.deepPurple);
-			set.icon.setIcon(new ImageIcon(GlobalDef.setImage_1));
-		}
+//		else if (t == GlobalDef.set) {
+//			set.label.setForeground(GlobalDef.deepPurple);
+//			set.icon.setIcon(new ImageIcon(GlobalDef.setImage_1));
+//		}
 	}
 }

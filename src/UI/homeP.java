@@ -23,10 +23,10 @@ public class homeP extends JPanel implements ActionListener {
 	private NomalPanel share;
 	private NomalPanel receive;
 	private NomalPanel tool;
-	private NomalPanel set;
+//	private NomalPanel set;
 	
 	public homeP() {
-		setLayout(new BorderLayout(100, 10));
+		setLayout(new BorderLayout(120, 50));
 		JPanel jw = new JPanel();
 		add(jw, BorderLayout.WEST);
 		banner = bannerP();
@@ -54,12 +54,16 @@ public class homeP extends JPanel implements ActionListener {
 	
 	private JPanel bannerP() {
 		JPanel jp = new JPanel();
-		jp.setLayout(new BorderLayout(20, 50));
+		jp.setLayout(new BorderLayout(20, 100));
+		JPanel jn = new JPanel();
+		jp.add(jn);
+		JPanel jc = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+//		JLabel iconLabel = new JLabel();
+//		iconLabel.setIcon(new ImageIcon("images/待定.png"));
+//		iconLabel.setSize(542, 105);
 		
-		JPanel jc = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 20));
-		JLabel iconLabel = new JLabel();
-		iconLabel.setIcon(new ImageIcon("images/待定.png"));
-		iconLabel.setSize(542, 105);
+		JLabel iconLabel = NomalLabel("注意个人信息安全，享受美好生活");
+		iconLabel.setFont(new java.awt.Font(GlobalDef.DefaultFontName, 0, 40));
 		jc.add(iconLabel);
 		jp.add(jc, BorderLayout.SOUTH);
 		
@@ -85,13 +89,13 @@ public class homeP extends JPanel implements ActionListener {
 		share = new NomalPanel(GlobalDef.share, GlobalDef.shareImage_0);
 		receive = new NomalPanel(GlobalDef.receive, GlobalDef.receiveImage_0);
 		tool = new NomalPanel(GlobalDef.tool, GlobalDef.toolImage_0);
-		set = new NomalPanel(GlobalDef.set, GlobalDef.setImage_0);
+//		set = new NomalPanel(GlobalDef.set, GlobalDef.setImage_0);
 		
 		jp.add(cloud);
 		jp.add(share);
 		jp.add(receive);
 		jp.add(tool);
-		jp.add(set);
+//		jp.add(set);
 		
 		return jp;
 	}
@@ -122,9 +126,9 @@ public class homeP extends JPanel implements ActionListener {
 			else if (o == tool) {
 				observeEvent.getInstance().setEventTag(EventDef.bigToolTap);
 			}
-			else if (o == set) {
-				observeEvent.getInstance().setEventTag(EventDef.bigSetTap);
-			}
+//			else if (o == set) {
+//				observeEvent.getInstance().setEventTag(EventDef.bigSetTap);
+//			}
 		}
 
 		@Override
